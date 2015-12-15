@@ -13,7 +13,7 @@ import javafx.stage.Stage;
 import me.lpk.gui.controls.TabContainer;
 
 /**
- * TODO List for SkidGUI 2.0
+ * TODO feature list for SkidGUI 2.0
  *
  * <ul>
  * <li>ZKM String removal / replacer
@@ -25,7 +25,17 @@ import me.lpk.gui.controls.TabContainer;
  * <li>Custom patch jobs
  * <li>Application CSS
  * </ul>
+ * <li>Inserting / removing code presets
+ * <ul>
+ * <li>Have a database of bytecode sequences
+ * <li>JD-GUI window that you can right click and insert in the presets
+ * before/after lines
+ * <li>Window remembers where presets are and can remove them instead of
+ * removing each instruction individually
+ * </ul>
  * <li>Database for known malicious instructions (Java malware scanner)
+ * <li>String pattern search (Have a few templates such as websites and IP
+ * addresses)
  * </ul>
  */
 public class Main extends Application {
@@ -41,7 +51,7 @@ public class Main extends Application {
 	public void start(Stage stage) throws Exception {
 		BorderPane root = new BorderPane();
 		TabPane tabPane = new TabPane();
-		//Iterate and create TabContainers for each tab type
+		// Iterate and create TabContainers for each tab type
 		for (EnumTab tabType : EnumTab.values()) {
 			Tab tab = new Tab();
 			tab.setText(tabType.getName());

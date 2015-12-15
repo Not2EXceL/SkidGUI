@@ -13,7 +13,6 @@ import me.lpk.asm.FixableClassNode;
 import me.lpk.mapping.objects.MappedClass;
 import me.lpk.mapping.objects.MappedField;
 import me.lpk.mapping.objects.MappedMethod;
-
 import me.lpk.util.Characters;
 
 /**
@@ -292,6 +291,10 @@ public class MappingGen {
 	 */
 	public static String getMain() {
 		return mainClass;
+	}
+
+	public static void setMain(String name) {
+		mainClass = name;
 	}
 
 }

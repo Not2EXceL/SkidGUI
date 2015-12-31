@@ -70,14 +70,28 @@ public class FixableClassNode extends ClassNode {
 			fn.desc = StringUtil.fixDesc(fn.desc, renamemap.values());
 			fn.signature = StringUtil.fixDesc(fn.signature, renamemap.values());
 			MappedField mf = classmapping.getFields().get(fn.name);
+			String newName = fn.name;
 			if (mf == null) {
-				continue;
+				MappedClass cm = classmapping.getParent();
+				while (cm != null) {
+					MappedField mftemp = cm.getFields().get(fn.name);
+					if (mftemp != null) {
+						System.out.println(cm.getOriginal() + ":" + mftemp.getRenamed());
+						newName = mftemp.getRenamed();
+						fn.name = newName;
+						break;
+					}
+					cm = cm.getParent();
+				}
+			} else {
+				newName = mf.getRenamed();
 			}
-			String newName = mf.getRenamed();
 			fn.name = newName;
 		}
 		// rename methods and local variables
-		for (int i = 0; i < methods.size(); i++) {
+		for (
+
+		int i = 0; i < methods.size(); i++) {
 			MethodNode mn = (MethodNode) methods.get(i);
 			mn.desc = StringUtil.fixDesc(mn.desc, renamemap.values());
 			mn.signature = StringUtil.fixDesc(mn.signature, renamemap.values());
@@ -108,14 +122,30 @@ public class FixableClassNode extends ClassNode {
 					} else if (o instanceof FieldInsnNode) {
 						FieldInsnNode fin = ((FieldInsnNode) o);
 						fin.desc = StringUtil.fixDesc(fin.desc, renamemap.values());
+						String originalName = fin.name;
 						fin.name = StringUtil.fixField(fin.name, renamemap.get(fin.owner));
+						if (fin.name.equals(originalName) && !MappingGen.shouldIgnore(fin.name)) {
+							MappedClass cm = classmapping.getParent();
+							boolean better = false;
+							while (cm != null) {
+								String newName = StringUtil.fixField(fin.name, renamemap.get(cm.getOriginal()));
+								if (!originalName.equals(newName)) {
+									originalName = newName;
+									better = true;
+								}
+								cm = cm.getParent();
+							}
+							if (better) {
+								fin.name = originalName;
+							}
+						}
 						fin.owner = StringUtil.fixDesc(fin.owner, renamemap.values());
 					} else if (o instanceof InvokeDynamicInsnNode) {
 						// I don't think this is ever called
 						// Multiple test cases and this is never called
 						InvokeDynamicInsnNode idn = ((InvokeDynamicInsnNode) o);
 						idn.desc = StringUtil.fixDesc(idn.desc, renamemap.values());
-						idn.desc = StringUtil.fixMethod(idn.name, renamemap.get(idn.bsm.getOwner()));
+						idn.name = StringUtil.fixMethod(idn.name, renamemap.get(idn.bsm.getOwner()));
 						// TODO: If there's a reason why this isn't called, fix
 						// it and do something with this
 						int tag = 0;
@@ -128,17 +158,33 @@ public class FixableClassNode extends ClassNode {
 						String originalName = min.name;
 						min.desc = StringUtil.fixDesc(min.desc, renamemap.values());
 						min.name = StringUtil.fixMethod(min.name, renamemap.get(min.owner));
-						if (min.name.equals(originalName)) {
+						if (min.name.equals(originalName) && !MappingGen.shouldIgnore(min.name)) {
 							MappedClass cm = classmapping.getParent();
+							boolean better = false;
 							while (cm != null) {
 								String newName = StringUtil.fixMethod(min.name, cm);
 								if (!originalName.equals(newName)) {
 									originalName = newName;
-									break;
+									better = true;
 								}
 								cm = cm.getParent();
 							}
-							min.name = originalName;
+							if (better) {
+								min.name = originalName;
+							} else {
+								cm = renamemap.get(min.owner);
+								while (cm != null) {
+									String newName = StringUtil.fixMethod(min.name, cm);
+									if (!originalName.equals(newName)) {
+										originalName = newName;
+										better = true;
+									}
+									cm = cm.getParent();
+								}
+								if (better) {
+									min.name = originalName;
+								} 
+							}
 						}
 						min.owner = StringUtil.fixDesc(min.owner, renamemap.values());
 					} else if (o instanceof MultiANewArrayInsnNode) {
@@ -150,21 +196,25 @@ public class FixableClassNode extends ClassNode {
 					} else if (o instanceof FrameNode) {
 						FrameNode fn = ((FrameNode) o);
 						List<Object> obList = new ArrayList<Object>();
-						for (Object b : fn.local) {
+						obList.addAll(fn.local);
+						int in = 0;
+						for (Object b : obList) {
 							if (b instanceof String) {
 								b = StringUtil.fixDesc(b.toString(), renamemap.values());
+								fn.local.set(in, b);
 							}
-							obList.add(b);
+							in++;
 						}
-						fn.local = obList;
+						in = 0;
 						obList.clear();
-						for (Object b : fn.stack) {
+						obList.addAll(fn.stack);
+						for (Object b : obList) {
 							if (b instanceof String) {
 								b = StringUtil.fixDesc(b.toString(), renamemap.values());
+								fn.stack.set(in, b);
 							}
-							obList.add(b);
+							in++;
 						}
-						fn.stack = obList;
 					} else if (o instanceof LdcInsnNode) {
 						LdcInsnNode vin = (LdcInsnNode) o;
 						if (vin.cst instanceof org.objectweb.asm.Type) {
@@ -175,6 +225,7 @@ public class FixableClassNode extends ClassNode {
 				}
 			}
 		}
+
 	}
 
 	@SuppressWarnings("unchecked")

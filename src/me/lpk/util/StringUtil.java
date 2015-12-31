@@ -13,7 +13,6 @@ public class StringUtil {
 				for (MappedClass mappedClass : values) {
 					if (description.contains(mappedClass.getOriginal())) {
 						description = replace(description, mappedClass.getOriginal(), mappedClass.getRenamed());
-
 					}
 				}
 			} catch (Exception e) {

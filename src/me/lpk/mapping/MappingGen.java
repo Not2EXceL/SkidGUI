@@ -264,6 +264,8 @@ public class MappingGen {
 			return true;
 		} else if (name.equals("start")) {
 			return true;
+		} else if (name.equals("handle")) {
+			return true;
 		}
 		return false;
 	}

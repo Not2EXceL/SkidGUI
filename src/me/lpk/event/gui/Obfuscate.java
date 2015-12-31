@@ -36,6 +36,8 @@ public class Obfuscate implements  EventHandler<ActionEvent> {
 			MappingGen.setLast(jar);
 			Map<String, FixableClassNode> nodes = JarUtil.loadClasses(jar);
 			Map<String, MappedClass> renamed = MappingGen.getRename(tab.getObfuscation(), nodes);
+			System.out.println("Renaming " + renamed.size() + " classes... ");
+			int workIndex = 0;
 			for (FixableClassNode cn : nodes.values()) {
 				ClassReader cr = new ClassReader(ASMUtil.getNodeBytes(cn));
 				ClassWriter cw = new ClassWriter(cr, ClassWriter.COMPUTE_MAXS);
@@ -43,6 +45,9 @@ public class Obfuscate implements  EventHandler<ActionEvent> {
 				//cn.accept(new CheckClassAdapter(cw));
 				cr.accept(cw, ClassReader.EXPAND_FRAMES);
 				cr = new ClassReader(cw.toByteArray());
+				String percentStr = ""+((workIndex  + 0.000000001f)/(renamed.size() - 0.00001f ))*100;
+				percentStr = percentStr.substring(0, percentStr.length() > 5 ? 5 : percentStr.length());
+				System.out.println("	" + workIndex + "/" + renamed.size() + " [" + percentStr + "%]");workIndex++;
 			}
 			JarUtil.saveAsJar(nodes.values(), tab.getExportedName());
 		} catch (Exception e) {

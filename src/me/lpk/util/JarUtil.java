@@ -100,7 +100,7 @@ public class JarUtil {
 				out.closeEntry();
 			}
 			// TODO: Detect if there is a META-INF and copy it if there is
-			boolean hasMeta = false;
+			boolean hasMeta = true;
 			if (hasMeta) {
 				out.putNextEntry(new ZipEntry("META-INF/MANIFEST.MF"));
 				out.write(getManifestBytes(MappingGen.getLast()));

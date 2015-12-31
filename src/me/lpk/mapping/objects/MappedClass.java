@@ -11,7 +11,6 @@ public class MappedClass extends MappedObject {
 	public MappedClass(String original, String renamed, MappedClass parent) {
 		super(original, renamed);
 		this.parent = parent;
-
 	}
 
 	public Map<String, MappedField> getFields() {

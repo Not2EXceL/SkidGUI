@@ -144,7 +144,7 @@ public class MappingGen {
 			sb.append("Class" + classIndex);
 		} else if (mode == NONE) {
 			sb.append(cn.name);
-		}else {
+		} else {
 			sb.append(getName(mode, classIndex));
 		}
 		return sb.toString();
@@ -163,7 +163,7 @@ public class MappingGen {
 			sb.append("method" + methodIndex);
 		} else if (mode == NONE) {
 			sb.append(mn.name);
-		}else {
+		} else {
 			sb.append(getName(mode, methodIndex));
 		}
 		return sb.toString();
@@ -182,7 +182,7 @@ public class MappingGen {
 			sb.append("field" + fieldIndex);
 		} else if (mode == NONE) {
 			sb.append(fn.name);
-		}else {
+		} else {
 			sb.append(getName(mode, fieldIndex));
 		}
 		return sb.toString();
@@ -261,6 +261,8 @@ public class MappingGen {
 		} else if (name.equals("toString")) {
 			return true;
 		} else if (name.equals("valueOf")) {
+			return true;
+		} else if (name.equals("start")) {
 			return true;
 		}
 		return false;

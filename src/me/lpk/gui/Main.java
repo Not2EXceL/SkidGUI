@@ -1,11 +1,8 @@
 package me.lpk.gui;
 
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
 import java.util.Set;
-
-import javax.swing.JOptionPane;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -88,13 +85,11 @@ public class Main extends Application {
 	public static void setTargetJar(File jarTarget) {
 		Main.jarTarget = jarTarget;
 		// Notify the other tabs that the main jar has been loaded.
-
 		for (TabContainer tabContainer : tabs) {
 			if (tabContainer == null) {
 				continue;
 			}
 			tabContainer.getTab().targetLoaded();
 		}
-
 	}
 }

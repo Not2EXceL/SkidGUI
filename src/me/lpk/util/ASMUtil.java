@@ -4,7 +4,7 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.ClassNode;
 
-import me.lpk.asm.FixableClassNode;
+
 
 public class ASMUtil {
 	/**
@@ -26,9 +26,9 @@ public class ASMUtil {
 	 * @param bytez
 	 * @return
 	 */
-	public static FixableClassNode getNode(final byte[] bytez) {
+	public static ClassNode getNode(final byte[] bytez) {
 		ClassReader cr = new ClassReader(bytez);
-		FixableClassNode cn = new FixableClassNode();
+		ClassNode cn = new ClassNode();
 		try {
 			cr.accept(cn, ClassReader.EXPAND_FRAMES);
 		} catch (Exception e) {

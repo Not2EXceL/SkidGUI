@@ -1,5 +1,6 @@
 package me.lpk.gui;
 
+import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.MethodNode;
 
@@ -13,7 +14,7 @@ import javafx.scene.control.cell.TextFieldListCell;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import me.lpk.asm.FixableClassNode;
+
 import me.lpk.event.gui.editor.EditClass;
 import me.lpk.event.gui.editor.EditField;
 import me.lpk.event.gui.editor.EditMethod;
@@ -30,9 +31,9 @@ import me.lpk.mapping.MappingGen;
  */
 public class NodeEditor extends BorderPane {
 	private static final int bigNum = 9999;
-	private final FixableClassNode node;
+	private final ClassNode node;
 
-	public NodeEditor(MapTab tab, FixableClassNode node) {
+	public NodeEditor(MapTab tab, ClassNode node) {
 		TextField txtClassName = new TextField(node.name);
 		this.node = node;
 		//
@@ -82,7 +83,7 @@ public class NodeEditor extends BorderPane {
 		setCenter(nameAndHbox);
 	}
 
-	public FixableClassNode getNode() {
+	public ClassNode getNode() {
 		return node;
 	}
 }

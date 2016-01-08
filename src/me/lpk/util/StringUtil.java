@@ -1,6 +1,7 @@
 package me.lpk.util;
 
 import java.util.Collection;
+import java.util.Map;
 
 import me.lpk.mapping.objects.MappedClass;
 import me.lpk.mapping.objects.MappedField;
@@ -54,6 +55,50 @@ public class StringUtil {
 		StringBuffer sb = new StringBuffer(orig);
 		sb.replace(sb.indexOf(oldStr), sb.indexOf(oldStr) + oldStr.length(), newStr);
 		return sb.toString();
+	}
+
+	/**
+	 * Gets a MappedClass in renamemap from a class's description
+	 * 
+	 * @param renamemap
+	 * @param desc
+	 * @return
+	 */
+	public static MappedClass getMappedFromDesc(Map<String, MappedClass> renamemap, String desc) {
+		if (desc.length() <= 3) {
+			return null;
+		}
+		int beginIndex = desc.indexOf("L");
+		int endIndex = desc.indexOf(";");
+		if (beginIndex == -1 || endIndex == -1) {
+			return null;
+		}
+		String owner = desc.substring(beginIndex + 1, endIndex);
+		return renamemap.get(owner);
+	}
+
+	/**
+	 * Updates a description's references with every MappedClass given.
+	 * 
+	 * @param description
+	 * @param values
+	 * @return
+	 */
+	public static String fixMethodRefs(String description, Collection<MappedClass> values) {
+		if (description != null) {
+			try {
+				for (MappedClass mappedClass : values) {
+					for (MappedMethod mappedMethod : mappedClass.getMethods().values()) {
+						if (description.equals(mappedMethod.getOriginal())) {
+							description = replace(description, mappedMethod.getOriginal(), mappedMethod.getRenamed());
+						}
+					}
+				}
+			} catch (Exception e) {
+				System.out.println("Fix[Desc] failed: " + description + " - " + e.getMessage());
+			}
+		}
+		return description;
 	}
 
 }

@@ -5,10 +5,11 @@ import java.util.Map;
 
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.tree.ClassNode;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import me.lpk.asm.FixableClassNode;
+
 import me.lpk.gui.Main;
 import me.lpk.gui.tabs.PatchingTab;
 import me.lpk.mapping.MappingGen;
@@ -30,15 +31,15 @@ public class PatchCustom implements EventHandler<ActionEvent> {
 		File jar = Main.getTargetJar();
 		try {
 			MappingGen.setLast(jar);
-			Map<String, FixableClassNode> nodes = JarUtil.loadClasses(jar);
-			for (FixableClassNode cn : nodes.values()) {
+			Map<String, ClassNode> nodes = JarUtil.loadClasses(jar);
+			for (ClassNode cn : nodes.values()) {
 				//ClassReader cr = new ClassReader(ASMUtil.getNodeBytes(cn));
 				//ClassWriter cw = new ClassWriter(cr, ClassWriter.COMPUTE_MAXS);
-				cn.patchCustom("cc", "a");
+				//cn.patchCustom("cc", "a");
 				//cr.accept(cw, ClassReader.EXPAND_FRAMES);
 				//cr = new ClassReader(cw.toByteArray());
 			}
-			JarUtil.saveAsJar(nodes.values(), "StringFixed.jar");
+			//JarUtil.saveAsJar(nodes.values(), "StringFixed.jar", false);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

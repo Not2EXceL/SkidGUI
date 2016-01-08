@@ -11,12 +11,14 @@ import java.util.zip.ZipFile;
 
 import javax.swing.JOptionPane;
 
+import org.objectweb.asm.tree.ClassNode;
+
 import javafx.scene.control.Button;
 import javafx.scene.control.Control;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.BorderPane;
-import me.lpk.asm.FixableClassNode;
+
 import me.lpk.event.gui.SaveJar;
 import me.lpk.event.gui.TreeClick;
 import me.lpk.gui.Main;
@@ -27,7 +29,7 @@ import me.lpk.mapping.objects.MappedClass;
 import me.lpk.util.JarUtil;
 
 public class MapTab extends BasicTab {
-	private final Map<String, FixableClassNode> nodes = new HashMap<String, FixableClassNode>();
+	private final Map<String, ClassNode> nodes = new HashMap<String, ClassNode>();
 	private final Map<String, MappedClass> remap = new HashMap<String, MappedClass>();
 	private Button btnSaveJar, btnSaveMap, btnLoadMap;
 	private TreeView<String> tree;
@@ -183,7 +185,7 @@ public class MapTab extends BasicTab {
 		return tree.getSelectionModel().getSelectedItem();
 	}
 
-	public Map<String, FixableClassNode> getNodes() {
+	public Map<String, ClassNode> getNodes() {
 		return nodes;
 	}
 
@@ -200,7 +202,7 @@ public class MapTab extends BasicTab {
 	}
 
 	public void showNodeEditor(String key) {
-		FixableClassNode node = nodes.get(key);
+		ClassNode node = nodes.get(key);
 		if (node != null) {
 			nodeEditor = new NodeEditor(this, node);
 			otherControls = nodeEditor;

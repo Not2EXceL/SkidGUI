@@ -3,6 +3,7 @@ package me.lpk.gui.tabs;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -16,6 +17,7 @@ import me.lpk.mapping.MappingGen;
 public class ObfuscationTab extends BasicTab {
 	private ComboBox<String> cmbObfuscation;
 	private TextField txtOutput;
+	private CheckBox chkMetaMain;
 	private static final String SIMPLE = "Simple", ABC = "Alphabetical", RAND = "Random-Short", UNI1="Unifucked";
 	private Button btnReob, btnEditor;
 
@@ -37,13 +39,15 @@ public class ObfuscationTab extends BasicTab {
 		ObservableList<String> options = FXCollections.observableArrayList(SIMPLE, ABC, RAND,UNI1);
 		cmbObfuscation = new ComboBox<String>(options);
 		cmbObfuscation.setValue(SIMPLE);
+		chkMetaMain = new CheckBox("Force Manifest Main Class");
 		hObfuType.getChildren().add(new Label("Reobfuscation type:"));
 		hObfuType.getChildren().add(cmbObfuscation);
 		//
-		HBox hExport = new HBox(2);
+		HBox hExport = new HBox(3);
 		txtOutput = new TextField("Obfuscated.jar");
 		hExport.getChildren().add(new Label("Exported file name:"));
 		hExport.getChildren().add(txtOutput);
+		hExport.getChildren().add(chkMetaMain);
 		//
 		VBox v = new VBox(2);
 		v.getChildren().add(hObfuType);
@@ -72,6 +76,10 @@ public class ObfuscationTab extends BasicTab {
 		return MappingGen.SIMPLE;
 	}
 
+	public boolean yes(){
+		return chkMetaMain.isSelected();
+	}
+	
 	public String getExportedName() {
 		return txtOutput.getText();
 	}

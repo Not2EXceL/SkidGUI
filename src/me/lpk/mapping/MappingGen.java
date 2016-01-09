@@ -26,7 +26,7 @@ import me.lpk.util.Characters;
  * TODO: Remove ALL usage of reflection.
  * 
  * TODO: Make mapping perfect (Is this method belong to a class not in this jar
- * file? Then don't fucking rename it)
+ * file? Then don't rename it)
  * 
  * TODO: Classes that refer to methods in their parent aren't updated in the
  * class visitor. Is that the visitor's fault or Mapping? May be the visitor
@@ -34,7 +34,7 @@ import me.lpk.util.Characters;
  * I wrote code saying only to look in X. So it ignores method inheritence.
  */
 public class MappingGen {
-	public static final int NONE = -1, ORDERED_DICTIONARY = 0, RAND_DICTIONARY = 1, SIMPLE = 2, FUCKED = 3, FUK = 166;
+	public static final int NONE = -1, ORDERED_DICTIONARY = 0, RAND_DICTIONARY = 1, SIMPLE = 2, UNICODE_NIGHTMARE = 3, UNICODE_MAX_LENGTH = 166;
 	private static Set<String> used = new HashSet<String>();
 	private static Map<String, ClassNode> nodes;
 	private static Map<String, MappedClass> rename;
@@ -372,8 +372,8 @@ public class MappingGen {
 				sb.append(Characters.ALPHABET_BOTH[randIndex]);
 			}
 			used.add(sb.toString());
-		} else if (mode == FUCKED) {
-			while (sb.length() < FUK || used.contains(sb.toString())) {
+		} else if (mode == UNICODE_NIGHTMARE) {
+			while (sb.length() < UNICODE_MAX_LENGTH || used.contains(sb.toString())) {
 				int randIndex = (int) (Math.random() * Characters.UNICODE.length);
 				sb.append(Characters.UNICODE[randIndex]);
 			}

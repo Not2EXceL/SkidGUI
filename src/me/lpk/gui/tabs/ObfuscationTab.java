@@ -71,7 +71,7 @@ public class ObfuscationTab extends BasicTab {
 		case SIMPLE:
 			return MappingGen.SIMPLE;
 		case UNI1:
-			return MappingGen.FUCKED;
+			return MappingGen.UNICODE_NIGHTMARE;
 		}
 		return MappingGen.SIMPLE;
 	}

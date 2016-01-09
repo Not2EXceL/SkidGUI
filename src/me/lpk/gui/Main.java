@@ -1,6 +1,7 @@
 package me.lpk.gui;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -11,6 +12,7 @@ import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import me.lpk.gui.controls.TabContainer;
+import me.lpk.util.Classpather;
 
 /**
  * TODO feature list for SkidGUI 2.0
@@ -72,24 +74,34 @@ public class Main extends Application {
 		return jarComparison;
 	}
 
-	public static void setComparisonJar(File jarBase) {
-		// Nothing needs to be notified at the moment that the comparison jar
-		// has been loaded. Later it will need to be implemented.
-		Main.jarComparison = jarBase;
-	}
-
 	public static File getTargetJar() {
 		return jarTarget;
 	}
 
+	public static void setComparisonJar(File jarBase) {
+		// Nothing needs to be notified at the moment that the comparison jar
+		// has been loaded. Later it will need to be implemented.
+		Main.jarComparison = jarBase;
+		loadJar(jarBase);
+	}
+
 	public static void setTargetJar(File jarTarget) {
 		Main.jarTarget = jarTarget;
+		loadJar(jarTarget);
 		// Notify the other tabs that the main jar has been loaded.
 		for (TabContainer tabContainer : tabs) {
 			if (tabContainer == null) {
 				continue;
 			}
 			tabContainer.getTab().targetLoaded();
+		}
+	}
+
+	private static void loadJar(File jarFile) {
+		try {
+			Classpather.addFile(jarFile);
+		} catch (IOException e1) {
+			e1.printStackTrace();
 		}
 	}
 }

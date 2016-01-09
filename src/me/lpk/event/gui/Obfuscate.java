@@ -25,6 +25,7 @@ import me.lpk.gui.tabs.ObfuscationTab;
 import me.lpk.mapping.MappingGen;
 import me.lpk.mapping.objects.MappedClass;
 import me.lpk.util.ASMUtil;
+import me.lpk.util.Classpather;
 import me.lpk.util.JarUtil;
 import me.lpk.util.Timer;
 
@@ -40,6 +41,7 @@ public class Obfuscate implements EventHandler<ActionEvent> {
 		try {
 			Timer t = new Timer();
 			File jar = Main.getTargetJar();
+			
 			MappingGen.setLast(jar);
 			Map<String, ClassNode> nodes = JarUtil.loadClasses(jar);
 			System.out.println("Generating new names for " + nodes.size() + " classes... ");

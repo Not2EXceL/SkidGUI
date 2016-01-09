@@ -80,7 +80,6 @@ public class SkidMapper extends Remapper {
 
 	@Override
 	public String mapInvokeDynamicMethodName(String name, String desc) {
-		System.out.println(desc + "      " + name);
 		MappedClass mc = renamed.get(StringUtil.getMappedFromDesc(renamed, desc));
 		if (mc != null) {
 			MappedMethod mm = mc.getMethods().get(name);

@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.MethodNode;
@@ -22,7 +21,17 @@ import me.lpk.util.Characters;
 
 /**
  * TODO: Make less of the functionality static. Was fine for testing but it
- * should be fixed for release.
+ * should be fixed for release. Get ready for a sort of future plugin system.
+ * 
+ * TODO: Remove ALL usage of reflection.
+ * 
+ * TODO: Make mapping perfect (Is this method belong to a class not in this jar
+ * file? Then don't fucking rename it)
+ * 
+ * TODO: Classes that refer to methods in their parent aren't updated in the
+ * class visitor. Is that the visitor's fault or Mapping? May be the visitor
+ * saying "Owner is X (Which extends Y). Method is in Y, so X should have it but
+ * I wrote code saying only to look in X. So it ignores method inheritence.
  */
 public class MappingGen {
 	public static final int NONE = -1, ORDERED_DICTIONARY = 0, RAND_DICTIONARY = 1, SIMPLE = 2, FUCKED = 3, FUK = 166;
@@ -75,8 +84,6 @@ public class MappingGen {
 		if (log) {
 			Genson g = new GensonBuilder().useIndentation(false).setSkipNull(true).exclude(ClassNode.class).exclude("parent", MappedClass.class).exclude("children", MappedClass.class).exclude("fields", MappedClass.class).create();
 			System.out.println(g.serialize(rename).trim());
-		} else {
-			System.out.println(rename.get(rename.keySet().toArray()[14]).getRenamed());
 		}
 		return rename;
 	}
@@ -89,11 +96,21 @@ public class MappingGen {
 	 */
 	private static void map(ClassNode cn) {
 		boolean hasParents = !cn.superName.equals("java/lang/Object");
+		boolean hasInterfaces = cn.interfaces.size() > 0;
 		if (hasParents) {
 			boolean parentRenamed = rename.containsKey(cn.superName);
 			ClassNode parentNode = nodes.get(cn.superName);
 			if (parentNode != null && !parentRenamed) {
 				map(parentNode);
+			}
+		}
+		if (hasInterfaces) {
+			for (String interfaze : cn.interfaces) {
+				boolean interfaceRenamed = rename.containsKey(interfaze);
+				ClassNode interfaceNode = nodes.get(interfaze);
+				if (interfaceNode != null && !interfaceRenamed) {
+					map(interfaceNode);
+				}
 			}
 		}
 		boolean isRenamed = rename.containsKey(cn.name);
@@ -119,83 +136,165 @@ public class MappingGen {
 	}
 
 	private static void addMethods(MappedClass classMap) {
+		Set<String> syntheticMethods = new HashSet<String>();
 		for (MethodNode methodNode : classMap.getNode().methods) {
-			MappedMethod mappedMethod = getParentMethod(classMap, methodNode);
-
-			if (mappedMethod == null) {
-				// If the name is <init> or <clinit>
-				if (methodNode.name.contains("<")) {
-					mappedMethod = new MappedMethod(methodNode.name, methodNode.name);
-				}
-				if (mappedMethod == null && AccessHelper.isEnum(methodNode.access)) {
-					if (methodNode.name.equals("values") || methodNode.name.equals("getName")|| methodNode.name.equals("ordinal")) {
-						mappedMethod = new MappedMethod(methodNode.name, methodNode.name);
-					}
-				}
-				try {
-					// THERE HAS TO BE A BETTER WAY OF CHECKING IF THE METHOD
-					// BELONGS TO A PARENT CLASS OR INTERFACE
-					// THIS IS FUCKING UGLY HOLY SHIT
-
-					Class superClass = Class.forName(methodNode.owner.superName.replace("/", "."));
-					Class clazz = Class.forName(methodNode.owner.name.replace("/", "."));
-					Class[] interfaces = clazz.getInterfaces();
-					
-					// Is the class an enum? If so if it is an enum-specific method keep the naming and continue;
-					
-					// loop through superclasses and see if the method belongs
-					// to a parent
-					boolean exit = mappedMethod != null;
-					while (!exit) {
-						for (Method m : superClass.getMethods()) {
-							if (m.getName().equals(methodNode.name)) {
-								mappedMethod = new MappedMethod(methodNode.name, methodNode.name);
-								exit = true;
-							}
-						}
-						superClass = superClass.getSuperclass();
-						if (superClass == null || superClass.getClass() == null || superClass.getClass().getName().contains("java.lang.Object")) {
-							exit = true;
-						}
-					}
-					// Check the interfaces of the class if it is still null.
-					if (mappedMethod == null) {
-						
-						for (Class interfaze : interfaces) {
-							String mapNameOfInterface = interfaze.getName().replace(".", "/");
-							boolean haveMapping = rename.containsKey(mapNameOfInterface);
-							if (haveMapping) {
-								MappedClass mappedInterface = rename.get(mapNameOfInterface);
-								if (mappedInterface.getMethods().containsKey(methodNode.name)) {
-									mappedMethod = mappedInterface.getMethods().get(methodNode.name);
-								}
-							} else {
-								for (Method m : interfaze.getMethods()) {
-									if (m.getName().equals(methodNode.name)) {
-										mappedMethod = new MappedMethod(methodNode.name, methodNode.name);
-									}
-								}
-							}
-						}
-					}
-				} catch (ClassNotFoundException | SecurityException | NullPointerException e) {
-					//This feels so wrong.... 
-					// e.printStackTrace();
-				}
-				//If the method is STILL null this means it must be totally new. Obfuscate it.
-				if (mappedMethod == null) {
-					mappedMethod = new MappedMethod(methodNode.name, getMethodName(methodNode, mode));
-				}
+			if (AccessHelper.isSynthetic(methodNode.access)) {
+				syntheticMethods.add(methodNode.name);
 			}
-			//If the method is the main one, notify ourselves it is indeed main.
+		}
+		for (MethodNode methodNode : classMap.getNode().methods) {
+			MappedMethod mappedMethod = null;
+			// If the method is the main one, make sure it's output name is the
+			// same as the intial name. Mark it as the main method as well.
 			if (isMain(methodNode)) {
 				mappedMethod = new MappedMethod(methodNode.name, methodNode.name);
 				setMain(classMap.getRenamed());
+			} else if (methodNode.name.contains("<")) {
+				// If the name is <init> or <clinit>
+				mappedMethod = new MappedMethod(methodNode.name, methodNode.name);
+			} else if (syntheticMethods.contains(methodNode.name)) {
+				// The method shares a synthetic method's name. It most likely
+				// should not be renamed.
+				mappedMethod = new MappedMethod(methodNode.name, methodNode.name);
+			} else {
+				// If the method is not the main method and not <init>/<clinit>,
+				// attempt to find it in a parent class.
+				mappedMethod = getParentMethod(classMap, methodNode);
 			}
-			//Add the method to the mapped class.
+			// If the method belongs to an enum and is an inbuilt method
+			// belonging to the Enum class.
+			if (mappedMethod == null && AccessHelper.isEnum(classMap.getNode().access)) {
+				if (methodNode.name.equals("values") || methodNode.name.equals("getName") || methodNode.name.equals("ordinal")) {
+					mappedMethod = new MappedMethod(methodNode.name, methodNode.name);
+				}
+			}
+			// If the method is still null, attempt to find it in
+			// the interfaces.
+			if (mappedMethod == null) {
+				mappedMethod = getInterfaceMethod(classMap, methodNode);
+			}
+			// Use reflection to see if a parent class has the method
+			if (mappedMethod == null) {
+				mappedMethod = getReflectionParent(classMap, methodNode);
+			}
+			// If the method is STILL null this means it must be totally
+			// new. Obfuscate it.
+			if (mappedMethod == null) {
+				mappedMethod = new MappedMethod(methodNode.name, getMethodName(methodNode, mode));
+			}
+			// Add the method to the mapped class.
 			classMap.getMethods().put(methodNode.name, mappedMethod);
 			methodIndex++;
 		}
+	}
+
+	/**
+	 * Attempt to find the given method in a parent class, given the inital
+	 * class the method belongs do.
+	 * 
+	 * @param classMap
+	 *            Initial class
+	 * @param methodNode
+	 *            Initial method
+	 * @return
+	 */
+	private static MappedMethod getParentMethod(final MappedClass classMap, final MethodNode methodNode) {
+		MappedClass parentMap = classMap.getParent();
+		while (parentMap != null) {
+			if (parentMap.getMethods().containsKey(methodNode.name)) {
+				return parentMap.getMethods().get(methodNode.name);
+			}
+			parentMap = parentMap.getParent();
+		}
+		return null;
+	}
+
+	/**
+	 * Attempt to find the given method in an interface, given the inital class
+	 * the method belongs do.
+	 * 
+	 * @param classMap
+	 *            Inital class
+	 * @param methodNode
+	 *            Initial method
+	 * @return
+	 */
+	private static MappedMethod getInterfaceMethod(final MappedClass classMap, final MethodNode methodNode) {
+		MappedClass parentMap = classMap;
+		while (parentMap != null) {
+			ClassNode node = parentMap.getNode();
+			for (String interfaze : node.interfaces) {
+				if (rename.containsKey(interfaze)) {
+					MappedClass mappedInterface = rename.get(interfaze);
+					if (mappedInterface.getMethods().containsKey(methodNode.name)) {
+						return mappedInterface.getMethods().get(methodNode.name);
+					}
+				}
+			}
+			parentMap = parentMap.getParent();
+		}
+
+		return null;
+	}
+
+	private static MappedMethod getReflectionParent(final MappedClass classMap, final MethodNode methodNode) {
+		try {
+			Class<?> clazz = Class.forName(methodNode.owner.name.replace("/", "."));
+			if (clazz != null) {
+				clazz = clazz.getSuperclass();
+			}
+			while (clazz != null) {
+				String asmName = clazz.getName().replace(".", "/");
+				for (Method method : clazz.getMethods()) {
+					if (method.getName().equals(methodNode.name)) {
+						if (rename.containsKey(asmName)) {
+							MappedClass mc = rename.get(asmName);
+							if (mc.getMethods().containsKey(methodNode.name)) {
+								return mc.getMethods().get(methodNode.name);
+							}
+						} else {
+							return new MappedMethod(methodNode.name, methodNode.name);
+						}
+					}
+				}
+				if (clazz.getName().contains("java.lang.Object")) {
+					clazz = null;
+					break;
+				} else {
+					clazz = clazz.getSuperclass();
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	/**
+	 * Checks if the method should be skipped for remapping
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public static boolean shouldIgnore(String name) {
+		if (name.contains("<")) {
+			return true;
+		} else if (name.contains("$")) {
+			return true;
+		} else if (name.equals("actionPerformed")) {
+			return true;
+		} else if (name.equals("toString")) {
+			return true;
+		} else if (name.equals("valueOf")) {
+			return true;
+		} else if (name.equals("start")) {
+			return true;
+		} else if (name.equals("handle")) {
+			return true;
+		} else if (name.equals("values")) {
+			return true;
+		}
+		return false;
 	}
 
 	/**
@@ -281,53 +380,6 @@ public class MappingGen {
 			used.add(sb.toString());
 		}
 		return sb.toString();
-	}
-
-	/**
-	 * Get the super method object of a given overridden method
-	 * 
-	 * @param classMap
-	 *            Initial node
-	 * @param methodNode
-	 *            Initial method
-	 * @return
-	 */
-	private static MappedMethod getParentMethod(MappedClass classMap, MethodNode methodNode) {
-		MappedClass parentMap = classMap.getParent();
-		while (parentMap != null) {
-			if (parentMap.getMethods().containsKey(methodNode.name)) {
-				return parentMap.getMethods().get(methodNode.name);
-			}
-			parentMap = parentMap.getParent();
-		}
-		return null;
-	}
-
-	/**
-	 * Checks if the method should be skipped for remapping
-	 * 
-	 * @param name
-	 * @return
-	 */
-	public static boolean shouldIgnore(String name) {
-		if (name.contains("<")) {
-			return true;
-		} else if (name.contains("$")) {
-			return true;
-		} else if (name.equals("actionPerformed")) {
-			return true;
-		} else if (name.equals("toString")) {
-			return true;
-		} else if (name.equals("valueOf")) {
-			return true;
-		} else if (name.equals("start")) {
-			return true;
-		} else if (name.equals("handle")) {
-			return true;
-		} else if (name.equals("values")) {
-			return true;
-		}
-		return false;
 	}
 
 	/**

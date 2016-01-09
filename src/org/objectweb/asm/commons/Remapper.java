@@ -68,7 +68,7 @@ public abstract class Remapper {
         return desc;
     }
 
-    private Type mapType(Type t) {
+    protected Type mapType(Type t) {
         switch (t.getSort()) {
         case Type.ARRAY:
             String s = mapDesc(t.getElementType().getDescriptor());

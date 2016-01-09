@@ -10,7 +10,6 @@ import org.objectweb.asm.tree.ClassNode;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import me.lpk.asm.ClzzVizz;
 import me.lpk.gui.Main;
 import me.lpk.gui.tabs.MapTab;
 import me.lpk.mapping.MappingGen;

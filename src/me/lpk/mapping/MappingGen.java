@@ -17,6 +17,7 @@ import com.owlike.genson.GensonBuilder;
 import me.lpk.mapping.objects.MappedClass;
 import me.lpk.mapping.objects.MappedField;
 import me.lpk.mapping.objects.MappedMethod;
+import me.lpk.util.AccessHelper;
 import me.lpk.util.Characters;
 
 /**
@@ -126,6 +127,11 @@ public class MappingGen {
 				if (methodNode.name.contains("<")) {
 					mappedMethod = new MappedMethod(methodNode.name, methodNode.name);
 				}
+				if (mappedMethod == null && AccessHelper.isEnum(methodNode.access)) {
+					if (methodNode.name.equals("values") || methodNode.name.equals("getName")|| methodNode.name.equals("ordinal")) {
+						mappedMethod = new MappedMethod(methodNode.name, methodNode.name);
+					}
+				}
 				try {
 					// THERE HAS TO BE A BETTER WAY OF CHECKING IF THE METHOD
 					// BELONGS TO A PARENT CLASS OR INTERFACE
@@ -136,11 +142,7 @@ public class MappingGen {
 					Class[] interfaces = clazz.getInterfaces();
 					
 					// Is the class an enum? If so if it is an enum-specific method keep the naming and continue;
-					if (mappedMethod == null && clazz.isEnum()) {
-						if (methodNode.name.equals("values") || methodNode.name.equals("getName")) {
-							mappedMethod = new MappedMethod(methodNode.name, methodNode.name);
-						}
-					}
+					
 					// loop through superclasses and see if the method belongs
 					// to a parent
 					boolean exit = mappedMethod != null;
@@ -158,6 +160,7 @@ public class MappingGen {
 					}
 					// Check the interfaces of the class if it is still null.
 					if (mappedMethod == null) {
+						
 						for (Class interfaze : interfaces) {
 							String mapNameOfInterface = interfaze.getName().replace(".", "/");
 							boolean haveMapping = rename.containsKey(mapNameOfInterface);

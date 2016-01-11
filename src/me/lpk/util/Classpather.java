@@ -20,6 +20,7 @@ public class Classpather {
 		addFile(f);
 	}
 
+	@SuppressWarnings("deprecation")
 	public static void addFile(File f) throws IOException {
 		addURL(f.toURL());
 	}

@@ -3,9 +3,9 @@ package me.lpk.gui.tabs;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -26,10 +26,11 @@ import me.lpk.gui.event.TreeClick;
 import me.lpk.mapping.MappingGen;
 import me.lpk.mapping.objects.MappedClass;
 import me.lpk.util.JarUtil;
+import me.lpk.util.TCompar;
 
 public class MapTab extends BasicTab {
-	private final Map<String, ClassNode> nodes = new HashMap<String, ClassNode>();
-	private final Map<String, MappedClass> remap = new HashMap<String, MappedClass>();
+	private final Map<String, ClassNode> nodes = new TreeMap<String, ClassNode>(new TCompar());
+	private final Map<String, MappedClass> remap = new TreeMap<String, MappedClass>(new TCompar());
 	private Button btnSaveJar, btnSaveMap, btnLoadMap;
 	private TreeView<String> tree;
 	private NodeEditor nodeEditor;
@@ -71,6 +72,9 @@ public class MapTab extends BasicTab {
 			nodes.putAll(JarUtil.loadClasses(Main.getTargetJar()));
 			remap.clear();
 			remap.putAll(MappingGen.getRename(MappingGen.NONE, nodes));
+			// Regenerate the tree again since that's all this method really
+			// does. Makes it sorted.
+			goBack();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

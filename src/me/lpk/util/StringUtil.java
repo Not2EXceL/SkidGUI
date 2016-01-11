@@ -51,6 +51,16 @@ public class StringUtil {
 		return methodName;
 	}
 
+	/**
+	 * TODO: Make it function like a "whole word" search. Except with classes.
+	 * 
+	 * Ex: Mapping for 'Class1' will fuck with 'Class15'.
+	 * 
+	 * @param orig
+	 * @param oldStr
+	 * @param newStr
+	 * @return
+	 */
 	public static String replace(String orig, String oldStr, String newStr) {
 		StringBuffer sb = new StringBuffer(orig);
 		sb.replace(sb.indexOf(oldStr), sb.indexOf(oldStr) + oldStr.length(), newStr);

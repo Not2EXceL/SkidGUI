@@ -39,6 +39,7 @@ public class SimpleStringMethodVisitor extends MethodVisitor {
 
 	@Override
 	public void visitMethodInsn(int opcode, String owner, String name, String desc, boolean itf) {
+		System.out.println("\t\t\tX");
 		if (canRun()) {
 			if (desc.equals(SimpleStringTransformer.STRING_IN_OUT)) {
 				String o = owner.contains("/") ? owner.substring(owner.lastIndexOf("/") + 1) : owner;
@@ -53,12 +54,22 @@ public class SimpleStringMethodVisitor extends MethodVisitor {
 		}
 	}
 
+	/**
+	 * TODO: In order to prevent possible malicious code from executing in the
+	 * <i>owner</i>'s <clinit> method, copy out the decrypt method to an empty
+	 * class, then execute the method in that class.
+	 * 
+	 * @param owner
+	 * @param name
+	 * @param in
+	 * @return
+	 */
 	private String getValue(String owner, String name, String in) {
 		try {
 			return (String) Class.forName(owner.replace("/", ".")).getDeclaredMethod(name, String.class).invoke(null, in);
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException | ClassNotFoundException e) {
 			e.printStackTrace();
 		}
-		return "FAILED_GETVALIE";
+		return "FAILED_GET_VALUE";
 	}
 }

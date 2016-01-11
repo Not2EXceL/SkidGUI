@@ -28,7 +28,7 @@ public class SimpleStringTransformer extends MethodTransformer {
 			SimpleStringMethodVisitor ssf = (SimpleStringMethodVisitor) mv;
 			ssf.setRemoveName(obMethod);
 			ssf.setRemoveOwner(obClass);
-			super.setMethodVisitor(mv);
+			super.setMethodVisitor(ssf);
 		} else {
 			super.setMethodVisitor(null);
 		}

@@ -41,7 +41,6 @@ public class Obfuscate implements EventHandler<ActionEvent> {
 		try {
 			Timer t = new Timer();
 			File jar = Main.getTargetJar();
-			
 			MappingGen.setLast(jar);
 			Map<String, ClassNode> nodes = JarUtil.loadClasses(jar);
 			System.out.println("Generating new names for " + nodes.size() + " classes... ");

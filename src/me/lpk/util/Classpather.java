@@ -7,11 +7,11 @@ import java.net.URL;
 import java.lang.reflect.Method;
 
 /**
- * I really really really don't want to use reflection. Loading classes is not
- * ideal for the program, but until I can get rid of required reflection loading
- * in the mappings generator, this will be needed.
+ * Adds jar files to the classpath.
+ * <hr>
+ * This is still required to let the MappingGen get ClassNodes based off of
+ * classnames. But that's a sacrifice I'm OK with.
  */
-@Deprecated
 public class Classpather {
 	private static final Class<?>[] parameters = new Class[] { URL.class };
 

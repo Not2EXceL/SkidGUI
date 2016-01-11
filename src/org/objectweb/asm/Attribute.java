@@ -101,7 +101,7 @@ public class Attribute {
      *            the class that contains the attribute to be read.
      * @param off
      *            index of the first byte of the attribute's content in
-     *            {@link ClassReader#b cr.b}. The 6 attribute header bytes,
+     *            {@link ClassReader#bytes cr.b}. The 6 attribute header bytes,
      *            containing the type and the length of the attribute, are not
      *            taken into account here.
      * @param len
@@ -112,7 +112,7 @@ public class Attribute {
      *            or {@link ClassReader#readConst readConst}.
      * @param codeOff
      *            index of the first byte of code's attribute content in
-     *            {@link ClassReader#b cr.b}, or -1 if the attribute to be read
+     *            {@link ClassReader#bytes cr.b}, or -1 if the attribute to be read
      *            is not a code attribute. The 6 attribute header bytes,
      *            containing the type and the length of the attribute, are not
      *            taken into account here.
@@ -127,7 +127,7 @@ public class Attribute {
             final Label[] labels) {
         Attribute attr = new Attribute(type);
         attr.value = new byte[len];
-        System.arraycopy(cr.b, off, attr.value, 0, len);
+        System.arraycopy(cr.bytes, off, attr.value, 0, len);
         return attr;
     }
 

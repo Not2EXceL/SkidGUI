@@ -109,10 +109,10 @@ public class ClassReader {
      * modified. This field is intended for {@link Attribute} sub classes, and
      * is normally not needed by class generators or adapters.</i>
      */
-    public final byte[] b;
+    public final byte[] bytes;
 
     /**
-     * The start index of each constant pool item in {@link #b b}, plus one. The
+     * The start index of each constant pool item in {@link #bytes b}, plus one. The
      * one byte offset skips the constant pool item tag that indicates its type.
      */
     private final int[] items;
@@ -135,7 +135,7 @@ public class ClassReader {
 
     /**
      * Start index of the class header information (access, name...) in
-     * {@link #b b}.
+     * {@link #bytes b}.
      */
     public final int header;
 
@@ -164,7 +164,7 @@ public class ClassReader {
      *            the length of the class data.
      */
     public ClassReader(final byte[] b, final int off, final int len) {
-        this.b = b;
+        this.bytes = b;
         // checks the class version
         if (readShort(off + 6) > Opcodes.V1_8) {
             throw new IllegalArgumentException();
@@ -291,7 +291,7 @@ public class ClassReader {
         Item[] items2 = new Item[ll];
         for (int i = 1; i < ll; i++) {
             int index = items[i];
-            int tag = b[index - 1];
+            int tag = bytes[index - 1];
             Item item = new Item(i);
             int nameType;
             switch (tag) {
@@ -360,7 +360,7 @@ public class ClassReader {
         }
 
         int off = items[1] - 1;
-        classWriter.pool.putByteArray(b, off, header - off);
+        classWriter.pool.putByteArray(bytes, off, header - off);
         classWriter.items = items2;
         classWriter.threshold = (int) (0.75d * ll);
         classWriter.index = ll;
@@ -407,7 +407,7 @@ public class ClassReader {
         }
         int attrSize = readInt(u + 4);
         ByteVector bootstrapMethods = new ByteVector(attrSize + 62);
-        bootstrapMethods.putByteArray(b, u + 10, attrSize - 2);
+        bootstrapMethods.putByteArray(bytes, u + 10, attrSize - 2);
         classWriter.bootstrapMethodsCount = boostrapMethodCount;
         classWriter.bootstrapMethods = bootstrapMethods;
     }
@@ -955,7 +955,7 @@ public class ClassReader {
 
         // visit the method parameters
         if (methodParameters != 0) {
-            for (int i = b[methodParameters] & 0xFF, v = methodParameters + 1; i > 0; --i, v = v + 4) {
+            for (int i = bytes[methodParameters] & 0xFF, v = methodParameters + 1; i > 0; --i, v = v + 4) {
                 mv.visitParameter(readUTF8(v, c), readUnsignedShort(v + 2));
             }
         }
@@ -1035,7 +1035,7 @@ public class ClassReader {
      */
     private void readCode(final MethodVisitor mv, final Context context, int u) {
         // reads the header
-        byte[] b = this.b;
+        byte[] b = this.bytes;
         char[] c = context.buffer;
         int maxStack = readUnsignedShort(u);
         int maxLocals = readUnsignedShort(u + 2);
@@ -1635,7 +1635,7 @@ public class ClassReader {
             }
             int pathLength = readByte(u);
             if ((target >>> 24) == 0x42) {
-                TypePath path = pathLength == 0 ? null : new TypePath(b, u);
+                TypePath path = pathLength == 0 ? null : new TypePath(bytes, u);
                 u += 1 + 2 * pathLength;
                 u = readAnnotationValues(u + 2, c, true,
                         mv.visitTryCatchAnnotation(target, path,
@@ -1718,7 +1718,7 @@ public class ClassReader {
         }
         int pathLength = readByte(u);
         context.typeRef = target;
-        context.typePath = pathLength == 0 ? null : new TypePath(b, u);
+        context.typePath = pathLength == 0 ? null : new TypePath(bytes, u);
         return u + 1 + 2 * pathLength;
     }
 
@@ -1730,7 +1730,7 @@ public class ClassReader {
      * @param context
      *            information about the class being parsed.
      * @param v
-     *            start offset in {@link #b b} of the annotations to be read.
+     *            start offset in {@link #bytes b} of the annotations to be read.
      * @param visible
      *            <tt>true</tt> if the annotations to be read are visible at
      *            runtime.
@@ -1738,7 +1738,7 @@ public class ClassReader {
     private void readParameterAnnotations(final MethodVisitor mv,
             final Context context, int v, final boolean visible) {
         int i;
-        int n = b[v++] & 0xFF;
+        int n = bytes[v++] & 0xFF;
         // workaround for a bug in javac (javac compiler generates a parameter
         // annotation array whose size is equal to the number of parameters in
         // the Java source file, while it should generate an array whose size is
@@ -1769,7 +1769,7 @@ public class ClassReader {
      * Reads the values of an annotation and makes the given visitor visit them.
      * 
      * @param v
-     *            the start offset in {@link #b b} of the values to be read
+     *            the start offset in {@link #bytes b} of the values to be read
      *            (including the unsigned short that gives the number of
      *            values).
      * @param buf
@@ -1805,7 +1805,7 @@ public class ClassReader {
      * Reads a value of an annotation and makes the given visitor visit it.
      * 
      * @param v
-     *            the start offset in {@link #b b} of the value to be read
+     *            the start offset in {@link #bytes b} of the value to be read
      *            (<i>not including the value name constant pool index</i>).
      * @param buf
      *            buffer to be used to call {@link #readUTF8 readUTF8},
@@ -1821,7 +1821,7 @@ public class ClassReader {
             final AnnotationVisitor av) {
         int i;
         if (av == null) {
-            switch (b[v] & 0xFF) {
+            switch (bytes[v] & 0xFF) {
             case 'e': // enum_const_value
                 return v + 5;
             case '@': // annotation_value
@@ -1832,7 +1832,7 @@ public class ClassReader {
                 return v + 3;
             }
         }
-        switch (b[v++] & 0xFF) {
+        switch (bytes[v++] & 0xFF) {
         case 'I': // pointer to CONSTANT_Integer
         case 'J': // pointer to CONSTANT_Long
         case 'F': // pointer to CONSTANT_Float
@@ -1881,7 +1881,7 @@ public class ClassReader {
                 return readAnnotationValues(v - 2, buf, false,
                         av.visitArray(name));
             }
-            switch (this.b[v++] & 0xFF) {
+            switch (this.bytes[v++] & 0xFF) {
             case 'B':
                 byte[] bv = new byte[size];
                 for (i = 0; i < size; i++) {
@@ -2047,7 +2047,7 @@ public class ClassReader {
         int tag;
         int delta;
         if (zip) {
-            tag = b[stackMap++] & 0xFF;
+            tag = bytes[stackMap++] & 0xFF;
         } else {
             tag = MethodWriter.FULL_FRAME;
             frame.offset = -1;
@@ -2133,7 +2133,7 @@ public class ClassReader {
      */
     private int readFrameType(final Object[] frame, final int index, int v,
             final char[] buf, final Label[] labels) {
-        int type = b[v++] & 0xFF;
+        int type = bytes[v++] & 0xFF;
         switch (type) {
         case 0:
             frame[index] = Opcodes.TOP;
@@ -2214,7 +2214,7 @@ public class ClassReader {
     }
 
     /**
-     * Reads an attribute in {@link #b b}.
+     * Reads an attribute in {@link #bytes b}.
      * 
      * @param attrs
      *            prototypes of the attributes that must be parsed during the
@@ -2225,7 +2225,7 @@ public class ClassReader {
      *            the type of the attribute.
      * @param off
      *            index of the first byte of the attribute's content in
-     *            {@link #b b}. The 6 attribute header bytes, containing the
+     *            {@link #bytes b}. The 6 attribute header bytes, containing the
      *            type and the length of the attribute, are not taken into
      *            account here (they have already been read).
      * @param len
@@ -2236,7 +2236,7 @@ public class ClassReader {
      *            readConst}.
      * @param codeOff
      *            index of the first byte of code's attribute content in
-     *            {@link #b b}, or -1 if the attribute to be read is not a code
+     *            {@link #bytes b}, or -1 if the attribute to be read is not a code
      *            attribute. The 6 attribute header bytes, containing the type
      *            and the length of the attribute, are not taken into account
      *            here.
@@ -2262,22 +2262,22 @@ public class ClassReader {
     // ------------------------------------------------------------------------
 
     /**
-     * Returns the number of constant pool items in {@link #b b}.
+     * Returns the number of constant pool items in {@link #bytes b}.
      * 
-     * @return the number of constant pool items in {@link #b b}.
+     * @return the number of constant pool items in {@link #bytes b}.
      */
     public int getItemCount() {
         return items.length;
     }
 
     /**
-     * Returns the start index of the constant pool item in {@link #b b}, plus
+     * Returns the start index of the constant pool item in {@link #bytes b}, plus
      * one. <i>This method is intended for {@link Attribute} sub classes, and is
      * normally not needed by class generators or adapters.</i>
      * 
      * @param item
      *            the index a constant pool item.
-     * @return the start index of the constant pool item in {@link #b b}, plus
+     * @return the start index of the constant pool item in {@link #bytes b}, plus
      *         one.
      */
     public int getItem(final int item) {
@@ -2296,68 +2296,68 @@ public class ClassReader {
     }
 
     /**
-     * Reads a byte value in {@link #b b}. <i>This method is intended for
+     * Reads a byte value in {@link #bytes b}. <i>This method is intended for
      * {@link Attribute} sub classes, and is normally not needed by class
      * generators or adapters.</i>
      * 
      * @param index
-     *            the start index of the value to be read in {@link #b b}.
+     *            the start index of the value to be read in {@link #bytes b}.
      * @return the read value.
      */
     public int readByte(final int index) {
-        return b[index] & 0xFF;
+        return bytes[index] & 0xFF;
     }
 
     /**
-     * Reads an unsigned short value in {@link #b b}. <i>This method is intended
+     * Reads an unsigned short value in {@link #bytes b}. <i>This method is intended
      * for {@link Attribute} sub classes, and is normally not needed by class
      * generators or adapters.</i>
      * 
      * @param index
-     *            the start index of the value to be read in {@link #b b}.
+     *            the start index of the value to be read in {@link #bytes b}.
      * @return the read value.
      */
     public int readUnsignedShort(final int index) {
-        byte[] b = this.b;
+        byte[] b = this.bytes;
         return ((b[index] & 0xFF) << 8) | (b[index + 1] & 0xFF);
     }
 
     /**
-     * Reads a signed short value in {@link #b b}. <i>This method is intended
+     * Reads a signed short value in {@link #bytes b}. <i>This method is intended
      * for {@link Attribute} sub classes, and is normally not needed by class
      * generators or adapters.</i>
      * 
      * @param index
-     *            the start index of the value to be read in {@link #b b}.
+     *            the start index of the value to be read in {@link #bytes b}.
      * @return the read value.
      */
     public short readShort(final int index) {
-        byte[] b = this.b;
+        byte[] b = this.bytes;
         return (short) (((b[index] & 0xFF) << 8) | (b[index + 1] & 0xFF));
     }
 
     /**
-     * Reads a signed int value in {@link #b b}. <i>This method is intended for
+     * Reads a signed int value in {@link #bytes b}. <i>This method is intended for
      * {@link Attribute} sub classes, and is normally not needed by class
      * generators or adapters.</i>
      * 
      * @param index
-     *            the start index of the value to be read in {@link #b b}.
+     *            the start index of the value to be read in {@link #bytes b}.
      * @return the read value.
      */
     public int readInt(final int index) {
-        byte[] b = this.b;
+        byte[] b = this.bytes;
         return ((b[index] & 0xFF) << 24) | ((b[index + 1] & 0xFF) << 16)
                 | ((b[index + 2] & 0xFF) << 8) | (b[index + 3] & 0xFF);
     }
 
     /**
-     * Reads a signed long value in {@link #b b}. <i>This method is intended for
+     * Reads a signed long value in {@link #bytes b}. <i>This method is intended for
      * {@link Attribute} sub classes, and is normally not needed by class
      * generators or adapters.</i>
      * 
      * @param index
-     *            the start index of the value to be read in {@link #b b}.
+     *            the start index of the value to be read in {@link #bytes b}.
      * @return the read value.
      */
     public long readLong(final int index) {
@@ -2367,12 +2367,12 @@ public class ClassReader {
     }
 
     /**
-     * Reads an UTF8 string constant pool item in {@link #b b}. <i>This method
+     * Reads an UTF8 string constant pool item in {@link #bytes b}. <i>This method
      * is intended for {@link Attribute} sub classes, and is normally not needed
      * by class generators or adapters.</i>
      * 
      * @param index
-     *            the start index of an unsigned short value in {@link #b b},
+     *            the start index of an unsigned short value in {@link #bytes b},
      *            whose value is the index of an UTF8 constant pool item.
      * @param buf
      *            buffer to be used to read the item. This buffer must be
@@ -2393,7 +2393,7 @@ public class ClassReader {
     }
 
     /**
-     * Reads UTF8 string in {@link #b b}.
+     * Reads UTF8 string in {@link #bytes b}.
      * 
      * @param index
      *            start offset of the UTF8 string to be read.
@@ -2406,7 +2406,7 @@ public class ClassReader {
      */
     private String readUTF(int index, final int utfLen, final char[] buf) {
         int endIndex = index + utfLen;
-        byte[] b = this.b;
+        byte[] b = this.bytes;
         int strLen = 0;
         int c;
         int st = 0;
@@ -2442,12 +2442,12 @@ public class ClassReader {
     }
 
     /**
-     * Reads a class constant pool item in {@link #b b}. <i>This method is
+     * Reads a class constant pool item in {@link #bytes b}. <i>This method is
      * intended for {@link Attribute} sub classes, and is normally not needed by
      * class generators or adapters.</i>
      * 
      * @param index
-     *            the start index of an unsigned short value in {@link #b b},
+     *            the start index of an unsigned short value in {@link #bytes b},
      *            whose value is the index of a class constant pool item.
      * @param buf
      *            buffer to be used to read the item. This buffer must be
@@ -2462,7 +2462,7 @@ public class ClassReader {
     }
 
     /**
-     * Reads a numeric or string constant pool item in {@link #b b}. <i>This
+     * Reads a numeric or string constant pool item in {@link #bytes b}. <i>This
      * method is intended for {@link Attribute} sub classes, and is normally not
      * needed by class generators or adapters.</i>
      * 
@@ -2477,7 +2477,7 @@ public class ClassReader {
      */
     public Object readConst(final int item, final char[] buf) {
         int index = items[item];
-        switch (b[index - 1]) {
+        switch (bytes[index - 1]) {
         case ClassWriter.INT:
             return readInt(index);
         case ClassWriter.FLOAT:

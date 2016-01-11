@@ -1,11 +1,14 @@
 package me.lpk.mapping;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.MethodNode;
@@ -16,6 +19,7 @@ import com.owlike.genson.GensonBuilder;
 import me.lpk.mapping.objects.MappedClass;
 import me.lpk.mapping.objects.MappedField;
 import me.lpk.mapping.objects.MappedMethod;
+import me.lpk.util.ASMUtil;
 import me.lpk.util.AccessHelper;
 import me.lpk.util.Characters;
 
@@ -175,7 +179,7 @@ public class MappingGen {
 			}
 			// Use reflection to see if a parent class has the method
 			if (mappedMethod == null) {
-				mappedMethod = getReflectionParent(classMap, methodNode);
+				mappedMethod = getParentBackup(classMap, methodNode);
 			}
 			// If the method is STILL null this means it must be totally
 			// new. Obfuscate it.
@@ -229,6 +233,8 @@ public class MappingGen {
 					if (mappedInterface.getMethods().containsKey(methodNode.name)) {
 						return mappedInterface.getMethods().get(methodNode.name);
 					}
+				} else {
+					return new MappedMethod(methodNode.name, methodNode.name);
 				}
 			}
 			parentMap = parentMap.getParent();
@@ -237,31 +243,46 @@ public class MappingGen {
 		return null;
 	}
 
-	private static MappedMethod getReflectionParent(final MappedClass classMap, final MethodNode methodNode) {
+	/**
+	 * Attempt to find the given method in a parent class, given the inital
+	 * class the method belongs to. 
+	 * 
+	 * @param classMap
+	 *            Initial class
+	 * @param methodNode
+	 *            Initial method
+	 * @return
+	 */
+	private static MappedMethod getParentBackup(final MappedClass classMap, final MethodNode methodNode) {
 		try {
-			Class<?> clazz = Class.forName(methodNode.owner.name.replace("/", "."));
-			if (clazz != null) {
-				clazz = clazz.getSuperclass();
-			}
-			while (clazz != null) {
-				String asmName = clazz.getName().replace(".", "/");
-				for (Method method : clazz.getMethods()) {
-					if (method.getName().equals(methodNode.name)) {
-						if (rename.containsKey(asmName)) {
-							MappedClass mc = rename.get(asmName);
-							if (mc.getMethods().containsKey(methodNode.name)) {
-								return mc.getMethods().get(methodNode.name);
+			ClassReader cr = new ClassReader(methodNode.owner.name);
+			ClassNode clazz = ASMUtil.getNode(cr.bytes);
+			if (clazz != null && clazz.superName != null) {
+				cr = new ClassReader(clazz.superName);
+				clazz = ASMUtil.getNode(cr.bytes);
+				//System.out.println(classMap.getOriginal() + " : " + methodNode.name);
+				while (clazz != null) {
+					for (MethodNode mn : clazz.methods) {
+						if (mn.name.equals(methodNode.name)) {
+							if (rename.containsKey(clazz.name)) {
+								MappedClass mc = rename.get(clazz.name);
+								if (mc.getMethods().containsKey(methodNode.name)) {
+									//System.out.println("\t\tFound parent mapping: " + methodNode.name);
+									return mc.getMethods().get(methodNode.name);
+								}
+							} else {
+								//System.out.println("\t\tMade mapping with no rename: " + methodNode.name);
+								return new MappedMethod(methodNode.name, methodNode.name);
 							}
-						} else {
-							return new MappedMethod(methodNode.name, methodNode.name);
 						}
 					}
-				}
-				if (clazz.getName().contains("java.lang.Object")) {
-					clazz = null;
-					break;
-				} else {
-					clazz = clazz.getSuperclass();
+					if (clazz.name.contains("java/lang/Object")) {
+						clazz = null;
+						break;
+					} else {
+						cr = new ClassReader(clazz.superName);
+						clazz = ASMUtil.getNode(cr.bytes);
+					}
 				}
 			}
 		} catch (Exception e) {

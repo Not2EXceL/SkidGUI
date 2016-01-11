@@ -69,11 +69,12 @@ public class SkidMapper extends Remapper {
 	@Override
 	public String mapMethodName(String owner, String name, String desc) {
 		MappedClass mc = renamed.get(owner);
-		if (mc != null) {
+		while (mc != null){
 			MappedMethod mm = mc.getMethods().get(name);
 			if (mm != null) {
 				name = mm.getRenamed();
 			}
+			mc = mc.getParent();
 		}
 		return super.mapMethodName(owner, name, desc);
 	}
@@ -81,11 +82,12 @@ public class SkidMapper extends Remapper {
 	@Override
 	public String mapInvokeDynamicMethodName(String name, String desc) {
 		MappedClass mc = renamed.get(StringUtil.getMappedFromDesc(renamed, desc));
-		if (mc != null) {
+		while (mc != null){
 			MappedMethod mm = mc.getMethods().get(name);
 			if (mm != null) {
 				name = mm.getRenamed();
 			}
+			mc = mc.getParent();
 		}
 		return super.mapInvokeDynamicMethodName(name, desc);
 	}

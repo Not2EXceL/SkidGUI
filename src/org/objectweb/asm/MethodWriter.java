@@ -2145,7 +2145,7 @@ class MethodWriter extends MethodVisitor {
                 | ((access & ClassWriter.ACC_SYNTHETIC_ATTRIBUTE) / FACTOR);
         out.putShort(access & ~mask).putShort(name).putShort(desc);
         if (classReaderOffset != 0) {
-            out.putByteArray(cw.cr.b, classReaderOffset, classReaderLength);
+            out.putByteArray(cw.cr.bytes, classReaderOffset, classReaderLength);
             return;
         }
         int attributeCount = 0;

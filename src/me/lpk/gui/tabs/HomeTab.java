@@ -2,9 +2,9 @@ package me.lpk.gui.tabs;
 
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
-import me.lpk.event.gui.DropTarget;
-import me.lpk.event.gui.LoadJar;
 import me.lpk.gui.controls.VerticalBar;
+import me.lpk.gui.event.DropTarget;
+import me.lpk.gui.event.LoadJar;
 import me.lpk.gui.controls.DropZone;
 
 public class HomeTab extends BasicTab {

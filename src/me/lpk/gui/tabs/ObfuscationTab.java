@@ -10,8 +10,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import me.lpk.event.gui.Obfuscate;
 import me.lpk.gui.controls.VerticalBar;
+import me.lpk.gui.event.Obfuscate;
 import me.lpk.mapping.MappingGen;
 
 public class ObfuscationTab extends BasicTab {

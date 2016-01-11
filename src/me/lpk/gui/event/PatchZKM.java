@@ -1,4 +1,4 @@
-package me.lpk.event.gui;
+package me.lpk.gui.event;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;

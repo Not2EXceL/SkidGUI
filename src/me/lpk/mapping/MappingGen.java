@@ -1,8 +1,6 @@
 package me.lpk.mapping;
 
 import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -260,18 +258,15 @@ public class MappingGen {
 			if (clazz != null && clazz.superName != null) {
 				cr = new ClassReader(clazz.superName);
 				clazz = ASMUtil.getNode(cr.bytes);
-				//System.out.println(classMap.getOriginal() + " : " + methodNode.name);
 				while (clazz != null) {
 					for (MethodNode mn : clazz.methods) {
 						if (mn.name.equals(methodNode.name)) {
 							if (rename.containsKey(clazz.name)) {
 								MappedClass mc = rename.get(clazz.name);
 								if (mc.getMethods().containsKey(methodNode.name)) {
-									//System.out.println("\t\tFound parent mapping: " + methodNode.name);
 									return mc.getMethods().get(methodNode.name);
 								}
 							} else {
-								//System.out.println("\t\tMade mapping with no rename: " + methodNode.name);
 								return new MappedMethod(methodNode.name, methodNode.name);
 							}
 						}

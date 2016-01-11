@@ -14,12 +14,11 @@ import javafx.scene.control.cell.TextFieldListCell;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-
-import me.lpk.event.gui.editor.EditClass;
-import me.lpk.event.gui.editor.EditField;
-import me.lpk.event.gui.editor.EditMethod;
-import me.lpk.event.gui.editor.GoBack;
 import me.lpk.gui.controls.HorizontalBar;
+import me.lpk.gui.event.editor.EditClass;
+import me.lpk.gui.event.editor.EditField;
+import me.lpk.gui.event.editor.EditMethod;
+import me.lpk.gui.event.editor.GoBack;
 import me.lpk.gui.tabs.MapTab;
 import me.lpk.mapping.MappingGen;
 

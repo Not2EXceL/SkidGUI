@@ -6,10 +6,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
-import me.lpk.event.gui.PatchJCrypt;
-import me.lpk.event.gui.PatchZKM;
-import me.lpk.event.gui.PatchCustom;
 import me.lpk.gui.controls.VerticalBar;
+import me.lpk.gui.event.PatchJCrypt;
+import me.lpk.gui.event.PatchSimpleStrings;
+import me.lpk.gui.event.PatchZKM;
 
 public class PatchingTab extends BasicTab {
 	private Button btnDumpJ, btnFixZKM, btnCustom;
@@ -27,7 +27,7 @@ public class PatchingTab extends BasicTab {
 		btnCustom.setDisable(true);
 		//
 		btnFixZKM.setOnAction(new PatchZKM(this));
-		btnCustom.setOnAction(new PatchCustom(this));
+		btnCustom.setOnAction(new PatchSimpleStrings(this));
 		btnDumpJ.setOnAction(new PatchJCrypt());
 		//
 		return new VerticalBar<Button>(1, btnDumpJ, btnFixZKM, btnCustom);

@@ -1,31 +1,21 @@
-package me.lpk.event.gui;
+package me.lpk.gui.event;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.commons.ClassRemapper;
 import org.objectweb.asm.commons.RemappingClassAdapter;
-import org.objectweb.asm.optimizer.Constant;
-import org.objectweb.asm.optimizer.ConstantPool;
-import org.objectweb.asm.optimizer.Shrinker.ConstantComparator;
 import org.objectweb.asm.tree.ClassNode;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import me.lpk.asm.SkidMapper;
+import me.lpk.asm.remap.SkidMapper;
 import me.lpk.gui.Main;
 import me.lpk.gui.tabs.ObfuscationTab;
 import me.lpk.mapping.MappingGen;
 import me.lpk.mapping.objects.MappedClass;
 import me.lpk.util.ASMUtil;
-import me.lpk.util.Classpather;
 import me.lpk.util.JarUtil;
 import me.lpk.util.Timer;
 

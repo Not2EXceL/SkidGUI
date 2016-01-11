@@ -1,14 +1,11 @@
-package me.lpk.event.gui;
+package me.lpk.gui.event;
 
 import java.io.File;
-import java.io.IOException;
-
 import javax.swing.JFileChooser;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import me.lpk.gui.Main;
-import me.lpk.util.Classpather;
 import me.lpk.util.SwingUtil;
 
 public class LoadJar implements EventHandler<ActionEvent> {

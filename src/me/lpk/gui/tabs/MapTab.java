@@ -18,12 +18,11 @@ import javafx.scene.control.Control;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.BorderPane;
-
-import me.lpk.event.gui.SaveJar;
-import me.lpk.event.gui.TreeClick;
 import me.lpk.gui.Main;
 import me.lpk.gui.NodeEditor;
 import me.lpk.gui.controls.VerticalBar;
+import me.lpk.gui.event.SaveJar;
+import me.lpk.gui.event.TreeClick;
 import me.lpk.mapping.MappingGen;
 import me.lpk.mapping.objects.MappedClass;
 import me.lpk.util.JarUtil;

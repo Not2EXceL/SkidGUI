@@ -1,4 +1,4 @@
-package me.lpk.event.gui;
+package me.lpk.gui.event;
 
 import javafx.event.EventHandler;
 import javafx.scene.control.TreeItem;

@@ -1,4 +1,4 @@
-package me.lpk.event.gui.editor;
+package me.lpk.gui.event.editor;
 
 import javafx.event.EventHandler;
 import javafx.scene.control.ListView;

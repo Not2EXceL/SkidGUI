@@ -1,4 +1,4 @@
-package me.lpk.event.gui;
+package me.lpk.gui.event;
 
 import java.io.File;
 import java.io.FileInputStream;

@@ -22,8 +22,9 @@ import me.lpk.gui.Main;
 import me.lpk.gui.NodeEditor;
 import me.lpk.gui.controls.VerticalBar;
 import me.lpk.gui.event.SaveJar;
-import me.lpk.gui.event.TreeClick;
+import me.lpk.gui.event.gui.TreeClick;
 import me.lpk.mapping.MappingGen;
+import me.lpk.mapping.modes.ModeNone;
 import me.lpk.mapping.objects.MappedClass;
 import me.lpk.util.JarUtil;
 import me.lpk.util.TCompar;
@@ -71,7 +72,7 @@ public class MapTab extends BasicTab {
 			nodes.clear();
 			nodes.putAll(JarUtil.loadClasses(Main.getTargetJar()));
 			remap.clear();
-			remap.putAll(MappingGen.getRename(MappingGen.NONE, nodes));
+			remap.putAll(MappingGen.getRename(new ModeNone(), nodes));
 			// Regenerate the tree again since that's all this method really
 			// does. Makes it sorted.
 			goBack();

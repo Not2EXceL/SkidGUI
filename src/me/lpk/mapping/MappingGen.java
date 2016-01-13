@@ -19,31 +19,18 @@ import me.lpk.mapping.objects.MappedField;
 import me.lpk.mapping.objects.MappedMethod;
 import me.lpk.util.ASMUtil;
 import me.lpk.util.AccessHelper;
-import me.lpk.util.Characters;
 
 /**
  * TODO: Make less of the functionality static. Was fine for testing but it
  * should be fixed for release. Get ready for a sort of future plugin system.
- * 
- * TODO: Remove ALL usage of reflection.
- * 
- * TODO: Make mapping perfect (Is this method belong to a class not in this jar
- * file? Then don't rename it)
- * 
- * TODO: Classes that refer to methods in their parent aren't updated in the
- * class visitor. Is that the visitor's fault or Mapping? May be the visitor
- * saying "Owner is X (Which extends Y). Method is in Y, so X should have it but
- * I wrote code saying only to look in X. So it ignores method inheritence.
  */
 public class MappingGen {
-	public static final int NONE = -1, ORDERED_DICTIONARY = 0, RAND_DICTIONARY = 1, SIMPLE = 2, UNICODE_NIGHTMARE = 3, UNICODE_MAX_LENGTH = 166;
-	private static Set<String> used = new HashSet<String>();
+	private static MappingMode mMode;
 	private static Map<String, ClassNode> nodes;
 	private static Map<String, MappedClass> rename;
 	private static File lastUsed;
-	private static int classIndex, fieldIndex, methodIndex;
+	//private static int classIndex, fieldIndex, methodIndex;
 	private static String mainClass;
-	private static int mode;
 
 	/**
 	 * Remaps a map of <String(Class names), ClassNode>.
@@ -52,13 +39,9 @@ public class MappingGen {
 	 * @param nodes
 	 * @return
 	 */
-	public static Map<String, MappedClass> getRename(int nameMode, Map<String, ClassNode> nodess) {
-		mode = nameMode;
+	public static Map<String, MappedClass> getRename(MappingMode mode, Map<String, ClassNode> nodess) {
+		mMode = mode;
 		nodes = nodess;
-		classIndex = 0;
-		fieldIndex = 0;
-		methodIndex = 0;
-		used.clear();
 		rename = new HashMap<String, MappedClass>();
 		for (ClassNode cn : nodes.values()) {
 			map(cn);
@@ -122,8 +105,7 @@ public class MappingGen {
 	}
 
 	private static void mapClass(ClassNode cn) {
-		classIndex++;
-		MappedClass classMap = new MappedClass(cn, getClassName(cn, mode), rename.get(cn.superName));
+		MappedClass classMap = new MappedClass(cn, mMode.getClassName(cn), rename.get(cn.superName));
 		addFields(classMap);
 		addMethods(classMap);
 		rename.put(cn.name, classMap);
@@ -131,9 +113,8 @@ public class MappingGen {
 
 	private static void addFields(MappedClass classMap) {
 		for (FieldNode fieldNode : classMap.getNode().fields) {
-			MappedField mappedField = new MappedField(fieldNode.name, getFieldName(fieldNode, mode));
+			MappedField mappedField = new MappedField(fieldNode.name, mMode.getFieldName(fieldNode));
 			classMap.getFields().put(fieldNode.name, mappedField);
-			fieldIndex++;
 		}
 	}
 
@@ -182,11 +163,10 @@ public class MappingGen {
 			// If the method is STILL null this means it must be totally
 			// new. Obfuscate it.
 			if (mappedMethod == null) {
-				mappedMethod = new MappedMethod(methodNode.name, getMethodName(methodNode, mode));
+				mappedMethod = new MappedMethod(methodNode.name, mMode.getMethodName(methodNode));
 			}
 			// Add the method to the mapped class.
 			classMap.getMethods().put(methodNode.name, mappedMethod);
-			methodIndex++;
 		}
 	}
 
@@ -284,118 +264,6 @@ public class MappingGen {
 			e.printStackTrace();
 		}
 		return null;
-	}
-
-	/**
-	 * Checks if the method should be skipped for remapping
-	 * 
-	 * @param name
-	 * @return
-	 */
-	public static boolean shouldIgnore(String name) {
-		if (name.contains("<")) {
-			return true;
-		} else if (name.contains("$")) {
-			return true;
-		} else if (name.equals("actionPerformed")) {
-			return true;
-		} else if (name.equals("toString")) {
-			return true;
-		} else if (name.equals("valueOf")) {
-			return true;
-		} else if (name.equals("start")) {
-			return true;
-		} else if (name.equals("handle")) {
-			return true;
-		} else if (name.equals("values")) {
-			return true;
-		}
-		return false;
-	}
-
-	/**
-	 * Creates a new name for a given class
-	 * 
-	 * @param cn
-	 * @param mode
-	 * @return
-	 */
-	private static String getClassName(ClassNode cn, int mode) {
-		StringBuilder sb = new StringBuilder();
-		if (mode == SIMPLE) {
-			sb.append("Class" + classIndex);
-		} else if (mode == NONE) {
-			sb.append(cn.name);
-		} else {
-			sb.append(getName(mode, classIndex));
-		}
-		return sb.toString();
-	}
-
-	/**
-	 * Creates a new name for a given method
-	 * 
-	 * @param mn
-	 * @param mode
-	 * @return
-	 */
-	private static String getMethodName(MethodNode mn, int mode) {
-		StringBuilder sb = new StringBuilder();
-		if (mode == SIMPLE) {
-			sb.append("method" + methodIndex);
-		} else if (mode == NONE) {
-			sb.append(mn.name);
-		} else {
-			sb.append(getName(mode, methodIndex));
-		}
-		return sb.toString();
-	}
-
-	/**
-	 * Creates a new name for a given field
-	 * 
-	 * @param fn
-	 * @param mode
-	 * @return
-	 */
-	private static String getFieldName(FieldNode fn, int mode) {
-		StringBuilder sb = new StringBuilder();
-		if (mode == SIMPLE) {
-			sb.append("field" + fieldIndex);
-		} else if (mode == NONE) {
-			sb.append(fn.name);
-		} else {
-			sb.append(getName(mode, fieldIndex));
-		}
-		return sb.toString();
-	}
-
-	private static String getName(int mode, int optIndex) {
-		StringBuilder sb = new StringBuilder();
-		if (mode == ORDERED_DICTIONARY) {
-			for (int i = 0; i < optIndex; i++) {
-				int mod = (i + 1) % Characters.ALPHABET_BOTH.length;
-				boolean even = mod == 0;
-				boolean last = i == optIndex - 1;
-				if (!even && !last) {
-					continue;
-				}
-				sb.append(Characters.ALPHABET_BOTH[mod]);
-			}
-		} else if (mode == RAND_DICTIONARY) {
-			while (sb.length() == 0 || used.contains(sb.toString())) {
-				int randIndex = (int) (Math.random() * Characters.ALPHABET_BOTH.length);
-				sb.append(Characters.ALPHABET_BOTH[randIndex]);
-			}
-			used.add(sb.toString());
-		} else if (mode == UNICODE_NIGHTMARE) {
-			while (sb.length() < UNICODE_MAX_LENGTH || used.contains(sb.toString())) {
-				int randIndex = (int) (Math.random() * Characters.UNICODE.length);
-				sb.append(Characters.UNICODE[randIndex]);
-			}
-			used.add(sb.toString());
-		}
-		return sb.toString();
 	}
 
 	/**

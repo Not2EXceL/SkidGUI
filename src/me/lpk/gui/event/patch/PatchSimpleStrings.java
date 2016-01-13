@@ -1,4 +1,4 @@
-package me.lpk.gui.event;
+package me.lpk.gui.event.patch;
 
 import java.io.File;
 import java.util.HashMap;
@@ -11,18 +11,19 @@ import org.objectweb.asm.tree.ClassNode;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import me.lpk.asm.modify.SimpleStringClassVisitor;
+import me.lpk.asm.stringrep.SimpleStringClassVisitor;
 import me.lpk.gui.Main;
+import me.lpk.gui.stages.StageStringPatch;
 import me.lpk.gui.tabs.PatchingTab;
 import me.lpk.mapping.MappingGen;
 import me.lpk.util.ASMUtil;
 import me.lpk.util.JarUtil;
 
 public class PatchSimpleStrings implements EventHandler<ActionEvent> {
-	private final PatchingTab tab;
+	private final StageStringPatch tab;
 
-	public PatchSimpleStrings(PatchingTab tab) {
-		this.tab = tab;
+	public PatchSimpleStrings(StageStringPatch stageStringPatch) {
+		this.tab = stageStringPatch;
 	}
 
 	@Override
@@ -37,7 +38,7 @@ public class PatchSimpleStrings implements EventHandler<ActionEvent> {
 			for (ClassNode cn : nodes.values()) {
 				ClassReader cr = new ClassReader(ASMUtil.getNodeBytes(cn));
 				ClassWriter cw = new ClassWriter(cr, ClassWriter.COMPUTE_MAXS);
-				ClassVisitor stringFixer = new SimpleStringClassVisitor(cw, cn, tab.getObfuClass(), tab.getObfuMethod());
+				ClassVisitor stringFixer = new SimpleStringClassVisitor(cw, cn, tab.getOClass(), tab.getOMethod());
 				cr.accept(stringFixer, ClassReader.EXPAND_FRAMES);
 				cr = new ClassReader(cw.toByteArray());
 				cw = new ClassWriter(0);

@@ -1,4 +1,4 @@
-package me.lpk.asm.remap;
+package me.lpk.asm;
 
 import java.util.Map;
 

@@ -1,4 +1,4 @@
-package me.lpk.asm.modify;
+package me.lpk.asm.stringrep;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -39,9 +39,10 @@ public class SimpleStringMethodVisitor extends MethodVisitor {
 
 	@Override
 	public void visitMethodInsn(int opcode, String owner, String name, String desc, boolean itf) {
-		System.out.println("\t\t\tX");
 		if (canRun()) {
+			System.out.println("\tCanRun: TRUE");
 			if (desc.equals(SimpleStringTransformer.STRING_IN_OUT)) {
+				System.out.println("\t\tSTRING_IN_OUT");
 				String o = owner.contains("/") ? owner.substring(owner.lastIndexOf("/") + 1) : owner;
 				System.out.println("\t\t" + OpCodes.opcodes.get(opcode) + ": " + o + "." + name + "(\"" + input + "\");");
 				String out = getValue(owner, name, input);
@@ -50,6 +51,7 @@ public class SimpleStringMethodVisitor extends MethodVisitor {
 				super.visitMethodInsn(opcode, owner, name, desc, itf);
 			}
 		} else {
+			System.out.println("\tCanRun: FALSE");
 			super.visitMethodInsn(opcode, owner, name, desc, itf);
 		}
 	}

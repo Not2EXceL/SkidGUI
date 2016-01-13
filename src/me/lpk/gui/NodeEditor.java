@@ -20,7 +20,6 @@ import me.lpk.gui.event.editor.EditField;
 import me.lpk.gui.event.editor.EditMethod;
 import me.lpk.gui.event.editor.GoBack;
 import me.lpk.gui.tabs.MapTab;
-import me.lpk.mapping.MappingGen;
 
 /**
  * TODO: Remove entierly.
@@ -58,7 +57,7 @@ public class NodeEditor extends BorderPane {
 		}
 		for (Object o : node.methods) {
 			MethodNode mn = (MethodNode) o;
-			if (MappingGen.shouldIgnore(mn.name)) {
+			if (shouldIgnore(mn.name)) {
 				continue;
 			}
 			observableMethods.add(mn.name);
@@ -80,6 +79,21 @@ public class NodeEditor extends BorderPane {
 		btn.setOnAction(new GoBack(tab));
 		nameAndHbox.getChildren().addAll(new HorizontalBar<Control>(0, txtClassName, btn), fieldsAndMethods);
 		setCenter(nameAndHbox);
+	}
+
+	/**
+	 * Checks if the method should be ignored.
+	 * 
+	 * @param name
+	 * @return
+	 */
+	private boolean shouldIgnore(String name) {
+		if (name.contains("<")) {
+			return true;
+		} else if (name.contains("$")) {
+			return true;
+		}
+		return false;
 	}
 
 	public ClassNode getNode() {

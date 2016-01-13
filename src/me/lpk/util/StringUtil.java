@@ -52,9 +52,7 @@ public class StringUtil {
 	}
 
 	/**
-	 * TODO: Make it function like a "whole word" search. Except with classes.
-	 * 
-	 * Ex: Mapping for 'Class1' will fuck with 'Class15'.
+	 * Replaces strings with old references with ones with updated references.
 	 * 
 	 * @param orig
 	 * @param oldStr
@@ -63,7 +61,27 @@ public class StringUtil {
 	 */
 	public static String replace(String orig, String oldStr, String newStr) {
 		StringBuffer sb = new StringBuffer(orig);
-		sb.replace(sb.indexOf(oldStr), sb.indexOf(oldStr) + oldStr.length(), newStr);
+		while (sb.toString().contains(oldStr)) {
+			if (orig.contains("(") && orig.contains(";")) {
+				int start = sb.indexOf("L" + oldStr) + 1;
+				int end = sb.indexOf(oldStr + ";") + oldStr.length();
+				if (start > -1 && end <= orig.length()) {
+					sb.replace(start, end, newStr);
+				} else {
+					System.err.println("REPLACE FAIL: (" + oldStr + ") - " + orig);
+					break;
+				}
+			} else {
+				if (sb.toString().equals(oldStr)) {
+					sb.replace(0, sb.length(), newStr);
+				} else {
+					// (me/lpk/mapping/objects/MappedClass) - Example
+					// TODO: Make a way to handle this in case of class name
+					// conflict
+					sb.replace(sb.indexOf(oldStr), sb.indexOf(oldStr) + oldStr.length(), newStr);
+				}
+			}
+		}
 		return sb.toString();
 	}
 

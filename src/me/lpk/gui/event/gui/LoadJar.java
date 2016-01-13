@@ -1,4 +1,4 @@
-package me.lpk.gui.event;
+package me.lpk.gui.event.gui;
 
 import java.io.File;
 import javax.swing.JFileChooser;

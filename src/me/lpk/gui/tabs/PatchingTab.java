@@ -1,81 +1,36 @@
 package me.lpk.gui.tabs;
 
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.VBox;
 import me.lpk.gui.controls.VerticalBar;
-import me.lpk.gui.event.PatchJCrypt;
-import me.lpk.gui.event.PatchSimpleStrings;
-import me.lpk.gui.event.PatchZKM;
+import me.lpk.gui.stages.StageObfuPatcher;
+import me.lpk.gui.stages.StageStringPatch;
 
 public class PatchingTab extends BasicTab {
-	private Button btnDumpJ, btnFixZKM, btnCustom;
-	private CheckBox chkInclusive, chkExclusive;
-	private TextField txtInclude, txtExclude;
-	private TextField txtClass, txtMethodName;
+	private final StageStringPatch stageStrings = new StageStringPatch();
+	private final StageObfuPatcher stageObfusca = new StageObfuPatcher();
+	private Button btnObfuPatch, btnStringPatch;
 
 	@Override
 	protected VerticalBar<Button> createButtonList() {
-		btnDumpJ = new Button("Patch JCrypt");
-		btnFixZKM = new Button("Patch ZKM");
-		btnCustom = new Button("Patch Custom");
-		btnDumpJ.setDisable(true);
-		btnFixZKM.setDisable(true);
-		btnCustom.setDisable(true);
-		//
-		btnFixZKM.setOnAction(new PatchZKM(this));
-		btnCustom.setOnAction(new PatchSimpleStrings(this));
-		btnDumpJ.setOnAction(new PatchJCrypt());
-		//
-		return new VerticalBar<Button>(1, btnDumpJ, btnFixZKM, btnCustom);
+		btnObfuPatch = new Button("Obfuscator Patcher");
+		btnStringPatch = new Button("StringOb Patcher");
+		btnObfuPatch.setDisable(true);
+		btnStringPatch.setDisable(true);
+		btnObfuPatch.setOnAction(new ShowStage(stageObfusca));
+		btnStringPatch.setOnAction(new ShowStage(stageStrings));
+		return new VerticalBar<Button>(1, btnObfuPatch, btnStringPatch);
 	}
 
 	@Override
 	protected BorderPane createOtherStuff() {
-		BorderPane bpChecks = new BorderPane();
-		BorderPane bpInputs = new BorderPane();
-		chkInclusive = new CheckBox("Limit to included packages");
-		chkExclusive = new CheckBox("Limit to excluded packages");
-		txtInclude = new TextField("Included packages");
-		txtExclude = new TextField("Excluded packages");
-		txtClass = new TextField("String obfu class");
-		txtMethodName = new TextField("obfu method name");
-		bpChecks.setRight(chkInclusive);
-		bpChecks.setLeft(chkExclusive);
-		bpInputs.setRight(txtInclude);
-		bpInputs.setLeft(txtExclude);
-		VBox v = new VBox(2);
-		VBox vPackages = new VBox(2);
-		vPackages.getChildren().add(bpChecks);
-		vPackages.getChildren().add(bpInputs);
-		BorderPane bpCustom2 = new BorderPane();
-		bpCustom2.setCenter(new Label("Custom Obfuscation Patching"));
-		VBox vCustom = new VBox(2);
-		BorderPane bpCustom1 = new BorderPane();
-		bpCustom1.setLeft(txtClass);
-		bpCustom1.setRight(txtMethodName);
-		vCustom.getChildren().add(bpCustom2);
-		vCustom.getChildren().add(bpCustom1);
-		v.getChildren().add(vPackages);
-		v.getChildren().add(vCustom);
-		return create(v);
+		BorderPane bp = new BorderPane();
+		return create(bp);
 	}
 
 	@Override
 	public void targetLoaded() {
-		btnDumpJ.setDisable(false);
-		btnFixZKM.setDisable(false);
-		btnCustom.setDisable(false);
-	}
-
-	public String getObfuClass() {
-		return txtClass.getText();
-	}
-
-	public String getObfuMethod() {
-		return txtMethodName.getText();
+		btnObfuPatch.setDisable(false);
+		btnStringPatch.setDisable(false);
 	}
 }

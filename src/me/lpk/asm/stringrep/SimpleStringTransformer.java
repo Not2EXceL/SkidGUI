@@ -1,4 +1,4 @@
-package me.lpk.asm.modify;
+package me.lpk.asm.stringrep;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -12,14 +12,17 @@ import org.objectweb.asm.tree.LdcInsnNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 
+import me.lpk.asm.MethodTransformer;
+
 public class SimpleStringTransformer extends MethodTransformer {
 	public final static String STRING_IN_OUT = "(Ljava/lang/String;)Ljava/lang/String;";
 	private final String obClass, obMethod;
 
 	public SimpleStringTransformer(ClassNode node, String obClass, String obMethod) {
 		super(node);
-		this.obClass = obClass;
-		this.obMethod = obMethod;
+
+		this.obClass = "me/test/Obfuscator";// obClass;
+		this.obMethod = "deob";// obMethod;
 	}
 
 	@Override
@@ -36,6 +39,7 @@ public class SimpleStringTransformer extends MethodTransformer {
 
 	@Override
 	public void transform(MethodNode method) {
+		System.out.println(method.owner.name + ":" + method.name);
 		if (mv == null) {
 			return;
 		}
@@ -66,11 +70,9 @@ public class SimpleStringTransformer extends MethodTransformer {
 				ssf.setInput(loc.input.cst.toString());
 				// For some reason I don't need to 'accept' the method visitor
 				// for it to run... I don't know how it works but it does.
-				
-				 //loc.input.accept(ssf); 
-				 //loc.min.accept(ssf);
-				 
-				System.out.println("\tReplacing obfuscation call at index: " + loc.invokeIndex + "("+ method.owner.name + "." + method.name + ")");
+				// loc.input.accept(ssf);
+				// loc.min.accept(ssf);
+				System.out.println("\tReplacing obfuscation call at index: " + loc.invokeIndex + "(" + method.owner.name + "." + method.name + ")");
 			}
 		}
 	}

@@ -1,4 +1,4 @@
-package me.lpk.asm.modify;
+package me.lpk.asm;
 
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.tree.ClassNode;

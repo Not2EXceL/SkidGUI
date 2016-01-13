@@ -10,7 +10,7 @@ import org.objectweb.asm.commons.RemappingClassAdapter;
 import org.objectweb.asm.tree.ClassNode;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import me.lpk.asm.remap.SkidMapper;
+import me.lpk.asm.SkidMapper;
 import me.lpk.gui.Main;
 import me.lpk.gui.tabs.ObfuscationTab;
 import me.lpk.mapping.MappingGen;
@@ -55,7 +55,7 @@ public class Obfuscate implements EventHandler<ActionEvent> {
 				workIndex++;
 			}
 			System.out.println("Saving classes...");
-			JarUtil.saveAsJar(out, tab.getExportedName(), tab.yes());
+			JarUtil.saveAsJar(out, tab.getExportedName(), tab.forceMeta());
 			System.out.println("Done! Completion time: " + (t.getTime()) + " Milliseconds");
 		} catch (Exception e) {
 			e.printStackTrace();

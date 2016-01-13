@@ -12,7 +12,7 @@ import org.objectweb.asm.tree.ClassNode;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import me.lpk.asm.remap.SkidMapper;
+import me.lpk.asm.SkidMapper;
 import me.lpk.gui.Main;
 import me.lpk.gui.tabs.MapTab;
 import me.lpk.mapping.MappingGen;

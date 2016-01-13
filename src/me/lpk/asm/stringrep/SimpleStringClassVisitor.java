@@ -1,10 +1,11 @@
-package me.lpk.asm.modify;
+package me.lpk.asm.stringrep;
 
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 
+import me.lpk.asm.MethodTransformer;
 import me.lpk.util.OpCodes;
 
 public class SimpleStringClassVisitor extends ClassVisitor {

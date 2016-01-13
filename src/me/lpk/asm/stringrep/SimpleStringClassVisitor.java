@@ -20,9 +20,6 @@ public class SimpleStringClassVisitor extends ClassVisitor {
 		MethodVisitor mv = super.visitMethod(access, name, desc, signature, exceptions);
 		if (mv == null) {
 			return null;
-		} else {
-			mv = new SimpleStringMethodVisitor(mv);
-			trans.setMethodVisitor(mv);
 		}
 		for (MethodNode mn : trans.getNode().methods) {
 			if (mn.name.equals(name) && mn.desc.equals(desc)) {

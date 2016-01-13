@@ -36,13 +36,8 @@ public class PatchSimpleStrings implements EventHandler<ActionEvent> {
 			System.out.println("Saving " + nodes.size() + " classes... ");
 			int workIndex = 1;
 			for (ClassNode cn : nodes.values()) {
-				ClassReader cr = new ClassReader(ASMUtil.getNodeBytes(cn));
-				ClassWriter cw = new ClassWriter(cr, ClassWriter.COMPUTE_MAXS);
-				ClassVisitor stringFixer = new SimpleStringClassVisitor(cw, cn, tab.getOClass(), tab.getOMethod());
-				cr.accept(stringFixer, ClassReader.EXPAND_FRAMES);
-				cr = new ClassReader(cw.toByteArray());
-				cw = new ClassWriter(0);
-				cr.accept(cw, 0);
+				ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+				cn.accept(new SimpleStringClassVisitor(cw, cn, tab.getOClass(), tab.getOMethod()));
 				out.put(cn.name, cw.toByteArray());
 				//
 				String percentStr = "" + ((workIndex + 0.000000001f) / (nodes.size() - 0.00001f)) * 100;

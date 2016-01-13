@@ -1,5 +1,6 @@
 package me.lpk.asm.stringrep;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -8,6 +9,8 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.InsnNode;
+import org.objectweb.asm.tree.IntInsnNode;
 import org.objectweb.asm.tree.LdcInsnNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
@@ -15,77 +18,88 @@ import org.objectweb.asm.tree.MethodNode;
 import me.lpk.asm.MethodTransformer;
 
 public class SimpleStringTransformer extends MethodTransformer {
-	public final static String STRING_IN_OUT = "(Ljava/lang/String;)Ljava/lang/String;";
+	public final static String STRING_OUT = ")Ljava/lang/String;";
 	private final String obClass, obMethod;
 
 	public SimpleStringTransformer(ClassNode node, String obClass, String obMethod) {
 		super(node);
 
-		this.obClass = "me/test/Obfuscator";// obClass;
-		this.obMethod = "deob";// obMethod;
-	}
-
-	@Override
-	public void setMethodVisitor(MethodVisitor mv) {
-		if (mv instanceof SimpleStringMethodVisitor) {
-			SimpleStringMethodVisitor ssf = (SimpleStringMethodVisitor) mv;
-			ssf.setRemoveName(obMethod);
-			ssf.setRemoveOwner(obClass);
-			super.setMethodVisitor(ssf);
-		} else {
-			super.setMethodVisitor(null);
-		}
+		this.obClass = obClass;
+		this.obMethod = obMethod;
 	}
 
 	@Override
 	public void transform(MethodNode method) {
-		System.out.println(method.owner.name + ":" + method.name);
-		if (mv == null) {
-			return;
-		}
 		Iterator<AbstractInsnNode> i = method.instructions.iterator();
-		Set<ObfuCall> locs = new HashSet<ObfuCall>();
-		int index = -1;
-		while (i.hasNext()) {
-			index++;
-			AbstractInsnNode ain = i.next();
-			if (ain == null) {
-				continue;
-			}
-			AbstractInsnNode prev = ain.getPrevious();
-			if (prev == null) {
-				continue;
-			}
+		for (AbstractInsnNode ain : method.instructions.toArray()) {
 			if (ain instanceof MethodInsnNode) {
 				MethodInsnNode min = (MethodInsnNode) ain;
-				if (min.getOpcode() == Opcodes.INVOKESTATIC && min.desc.equals(STRING_IN_OUT) && min.getPrevious().getOpcode() == Opcodes.LDC) {
-					LdcInsnNode ldc = (LdcInsnNode) min.getPrevious();
-					locs.add(new ObfuCall(min, index, ldc));
+				Class<?> param = getParam(min.desc);
+				if (min.getOpcode() == Opcodes.INVOKESTATIC && min.owner.contains(obClass) && min.name.equals(obMethod) && min.desc.endsWith(STRING_OUT) && param != null) {
+					System.out.println("\t\t" + min.owner + "." + min.name + " - " + min.desc);
+					int opcode = min.getPrevious().getOpcode();
+					if (opcode == Opcodes.LDC) {
+						LdcInsnNode ldc = (LdcInsnNode) min.getPrevious();
+						method.instructions.remove(min);
+						ldc.cst = getValue(min.owner, min.name, param, ldc.cst);
+					} else if (opcode == Opcodes.ICONST_0 || opcode == Opcodes.ICONST_1 || opcode == Opcodes.ICONST_2 || opcode == Opcodes.ICONST_3 || opcode == Opcodes.ICONST_4 || opcode == Opcodes.ICONST_5) {
+						InsnNode in = (InsnNode) min.getPrevious();
+						int inVal = opcode == Opcodes.ICONST_0 ? 0 : opcode == Opcodes.ICONST_1 ? 1 : opcode == Opcodes.ICONST_2 ? 2 : opcode == Opcodes.ICONST_3 ? 3 : opcode == Opcodes.ICONST_4 ? 4 : opcode == Opcodes.ICONST_5 ? 5 : -1;
+						if (inVal >= 0) {
+							method.instructions.remove(min);
+							method.instructions.set(in,new LdcInsnNode(getValue(min.owner, min.name, param, inVal)));
+						}
+					} else if (opcode == Opcodes.SIPUSH) {
+						IntInsnNode iin = (IntInsnNode) min.getPrevious();
+						method.instructions.remove(min);
+						method.instructions.set(iin,new LdcInsnNode(getValue(min.owner, min.name, param, iin.operand)));
+					}
 				}
 			}
 		}
-		if (locs.size() > 0) {
-			for (ObfuCall loc : locs) {
-				SimpleStringMethodVisitor ssf = (SimpleStringMethodVisitor) mv;
-				ssf.setInput(loc.input.cst.toString());
-				// For some reason I don't need to 'accept' the method visitor
-				// for it to run... I don't know how it works but it does.
-				// loc.input.accept(ssf);
-				// loc.min.accept(ssf);
-				System.out.println("\tReplacing obfuscation call at index: " + loc.invokeIndex + "(" + method.owner.name + "." + method.name + ")");
-			}
-		}
+
 	}
 
-	class ObfuCall {
-		MethodInsnNode min;
-		int invokeIndex;
-		LdcInsnNode input;
-
-		ObfuCall(MethodInsnNode min, int invokeIndex, LdcInsnNode input) {
-			this.min = min;
-			this.invokeIndex = invokeIndex;
-			this.input = input;
+	private Class<?> getParam(String desc) {
+		// Input "(Ljava/lang/String;)Ljava/lang/String;";
+		if (desc.contains(")") && desc.length() > 2) {
+			int end = desc.indexOf(";)");
+			if (end == -1) {
+				if (desc.startsWith("(I)")) {
+					return int.class;
+				}
+				return null;
+			}
+			String first = desc.substring(2, end);
+			if (!first.contains(";")) {
+				try {
+					return Class.forName(first.replace("/", "."));
+				} catch (ClassNotFoundException e) {
+					e.printStackTrace();
+				}
+			} else {
+				System.out.println("FAIL: " + desc);
+			}
 		}
+		return null;
+	}
+
+	/**
+	 * TODO: Using ASM copy out the method into an empty class. Then use
+	 * reflection on the empty class. Will possibly prevent malicious code from
+	 * executing in <clinit>
+	 * 
+	 * @param owner
+	 * @param name
+	 * @param in
+	 * @return
+	 */
+	private Object getValue(String owner, String name, Class<?> param, Object in) {
+		try {
+			return Class.forName(owner.replace("/", ".")).getDeclaredMethod(name, param).invoke(null, in);
+		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException | ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		return "FAILED_GET_VALUE";
 	}
 }

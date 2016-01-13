@@ -47,12 +47,12 @@ public class SimpleStringTransformer extends MethodTransformer {
 						int inVal = opcode == Opcodes.ICONST_0 ? 0 : opcode == Opcodes.ICONST_1 ? 1 : opcode == Opcodes.ICONST_2 ? 2 : opcode == Opcodes.ICONST_3 ? 3 : opcode == Opcodes.ICONST_4 ? 4 : opcode == Opcodes.ICONST_5 ? 5 : -1;
 						if (inVal >= 0) {
 							method.instructions.remove(min);
-							method.instructions.set(in,new LdcInsnNode(getValue(min.owner, min.name, param, inVal)));
+							method.instructions.set(in, new LdcInsnNode(getValue(min.owner, min.name, param, inVal)));
 						}
 					} else if (opcode == Opcodes.SIPUSH) {
 						IntInsnNode iin = (IntInsnNode) min.getPrevious();
 						method.instructions.remove(min);
-						method.instructions.set(iin,new LdcInsnNode(getValue(min.owner, min.name, param, iin.operand)));
+						method.instructions.set(iin, new LdcInsnNode(getValue(min.owner, min.name, param, iin.operand)));
 					}
 				}
 			}
@@ -61,13 +61,19 @@ public class SimpleStringTransformer extends MethodTransformer {
 	}
 
 	private Class<?> getParam(String desc) {
-		// Input "(Ljava/lang/String;)Ljava/lang/String;";
 		if (desc.contains(")") && desc.length() > 2) {
 			int end = desc.indexOf(";)");
+			// If the index is -1, input is a primitive
 			if (end == -1) {
 				if (desc.startsWith("(I)")) {
+					// Int
 					return int.class;
+				} else if (desc.startsWith("(J)")) {
+					// Long
+					return long.class;
 				}
+				// I doubt anyone would use double or float. So no support for
+				// those needed.
 				return null;
 			}
 			String first = desc.substring(2, end);

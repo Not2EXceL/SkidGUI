@@ -21,11 +21,11 @@ public class TreeClick implements EventHandler<MouseEvent> {
 			}
 			StringBuilder sb = new StringBuilder();
 			while (item.getParent() != null) {
-				sb.insert(0,"/" + item.getValue());
+				sb.insert(0, "/" + item.getValue());
 				item = item.getParent();
 			}
 			String selected = sb.substring(1);
-			if (tab.hasNode(selected)){
+			if (tab.hasNode(selected)) {
 				tab.showNodeEditor(selected);
 			}
 		}

@@ -44,13 +44,13 @@ import org.objectweb.asm.Label;
  */
 public interface Textifiable {
 
-    /**
-     * Build a human readable representation of this attribute.
-     * 
-     * @param buf
-     *            a buffer used for printing Java code.
-     * @param labelNames
-     *            map of label instances to their names.
-     */
-    void textify(StringBuffer buf, Map<Label, String> labelNames);
+	/**
+	 * Build a human readable representation of this attribute.
+	 * 
+	 * @param buf
+	 *            a buffer used for printing Java code.
+	 * @param labelNames
+	 *            map of label instances to their names.
+	 */
+	void textify(StringBuffer buf, Map<Label, String> labelNames);
 }

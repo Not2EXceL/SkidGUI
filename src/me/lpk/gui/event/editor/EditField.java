@@ -17,7 +17,7 @@ public class EditField implements EventHandler<ListView.EditEvent<String>> {
 
 	@Override
 	public void handle(EditEvent<String> event) {
-		String nodeName =tab.getNodeEditor().getNode().name;
+		String nodeName = tab.getNodeEditor().getNode().name;
 		String methodName = fields.getItems().get(event.getIndex());
 		MappedField mf = tab.getRemap().get(nodeName).getFields().get(methodName);
 		if (mf != null) {

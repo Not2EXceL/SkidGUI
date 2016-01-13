@@ -42,30 +42,26 @@ import org.xml.sax.Attributes;
  */
 public final class SAXFieldAdapter extends FieldVisitor {
 
-    SAXAdapter sa;
+	SAXAdapter sa;
 
-    public SAXFieldAdapter(final SAXAdapter sa, final Attributes att) {
-        super(Opcodes.ASM5);
-        this.sa = sa;
-        sa.addStart("field", att);
-    }
+	public SAXFieldAdapter(final SAXAdapter sa, final Attributes att) {
+		super(Opcodes.ASM5);
+		this.sa = sa;
+		sa.addStart("field", att);
+	}
 
-    @Override
-    public AnnotationVisitor visitAnnotation(final String desc,
-            final boolean visible) {
-        return new SAXAnnotationAdapter(sa, "annotation", visible ? 1 : -1,
-                null, desc);
-    }
+	@Override
+	public AnnotationVisitor visitAnnotation(final String desc, final boolean visible) {
+		return new SAXAnnotationAdapter(sa, "annotation", visible ? 1 : -1, null, desc);
+	}
 
-    @Override
-    public AnnotationVisitor visitTypeAnnotation(int typeRef,
-            TypePath typePath, String desc, boolean visible) {
-        return new SAXAnnotationAdapter(sa, "typeAnnotation", visible ? 1 : -1,
-                null, desc, typeRef, typePath);
-    }
+	@Override
+	public AnnotationVisitor visitTypeAnnotation(int typeRef, TypePath typePath, String desc, boolean visible) {
+		return new SAXAnnotationAdapter(sa, "typeAnnotation", visible ? 1 : -1, null, desc, typeRef, typePath);
+	}
 
-    @Override
-    public void visitEnd() {
-        sa.addEnd("field");
-    }
+	@Override
+	public void visitEnd() {
+		sa.addEnd("field");
+	}
 }

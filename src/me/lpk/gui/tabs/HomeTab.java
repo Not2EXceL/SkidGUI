@@ -28,5 +28,6 @@ public class HomeTab extends BasicTab {
 	}
 
 	@Override
-	public void targetLoaded() {}
+	public void targetLoaded() {
+	}
 }

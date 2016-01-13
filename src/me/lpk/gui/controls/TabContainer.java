@@ -12,8 +12,8 @@ public class TabContainer extends BorderPane {
 	public TabContainer(BasicTab tab) {
 		this.tab = tab;
 	}
-	
-	public BasicTab getTab(){
+
+	public BasicTab getTab() {
 		return tab;
 	}
 }

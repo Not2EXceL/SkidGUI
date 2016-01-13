@@ -4,8 +4,6 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.ClassNode;
 
@@ -14,9 +12,7 @@ import javafx.event.EventHandler;
 import me.lpk.asm.stringrep.SimpleStringClassVisitor;
 import me.lpk.gui.Main;
 import me.lpk.gui.stages.StageStringPatch;
-import me.lpk.gui.tabs.PatchingTab;
 import me.lpk.mapping.MappingGen;
-import me.lpk.util.ASMUtil;
 import me.lpk.util.JarUtil;
 
 public class PatchSimpleStrings implements EventHandler<ActionEvent> {

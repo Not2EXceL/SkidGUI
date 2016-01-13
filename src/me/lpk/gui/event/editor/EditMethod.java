@@ -17,7 +17,7 @@ public class EditMethod implements EventHandler<ListView.EditEvent<String>> {
 
 	@Override
 	public void handle(EditEvent<String> event) {
-		String nodeName =tab.getNodeEditor().getNode().name;
+		String nodeName = tab.getNodeEditor().getNode().name;
 		String methodName = methods.getItems().get(event.getIndex());
 		MappedMethod mm = tab.getRemap().get(nodeName).getMethods().get(methodName);
 		if (mm != null) {

@@ -26,7 +26,8 @@ public class ModeAlphabetical extends MappingMode {
 	}
 
 	/*
-	 * TODO: Improve  x,y,z,A... Az, Bz... so the AAA's dont stack up in larger programs
+	 * TODO: Improve x,y,z,A... Az, Bz... so the AAA's dont stack up in larger
+	 * programs
 	 */
 	private String getName(int index) {
 		StringBuilder sb = new StringBuilder();

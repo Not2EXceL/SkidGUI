@@ -5,7 +5,7 @@ import javafx.event.EventHandler;
 import me.lpk.gui.tabs.PatchingTab;
 
 public class PatchZKM implements EventHandler<ActionEvent> {
-	//I hate warnings. Will eventually be used... 
+	// I hate warnings. Will eventually be used...
 	@SuppressWarnings("unused")
 	private final PatchingTab tab;
 

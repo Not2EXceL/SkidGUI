@@ -122,11 +122,12 @@ public class JarUtil {
 				int mainIndex = sb.indexOf(strMain);
 				int pathIndex = sb.indexOf(strPath);
 				sb2.append("Manifest-Version: 1.0\n");
-				if (pathIndex != -1){
+				if (pathIndex != -1) {
 					String path = sb.substring(pathIndex, mainIndex);
 					sb2.append(path);
 
-				}if (mainIndex != -1){
+				}
+				if (mainIndex != -1) {
 					String main = sb.substring(mainIndex, mainIndex + strMain.length()) + MappingGen.getMain() + "\n\r";
 					sb2.append(main);
 				}

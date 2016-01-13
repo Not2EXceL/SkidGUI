@@ -11,8 +11,7 @@ public abstract class MappingMode {
 	 * @param cn
 	 * @return
 	 */
-	public abstract String getClassName(ClassNode cn) ;
-	
+	public abstract String getClassName(ClassNode cn);
 
 	/**
 	 * Creates a new name for a given method
@@ -20,13 +19,13 @@ public abstract class MappingMode {
 	 * @param mn
 	 * @return
 	 */
-	public abstract  String getMethodName(MethodNode mn);
-	
+	public abstract String getMethodName(MethodNode mn);
+
 	/**
 	 * Creates a new name for a given field
 	 * 
 	 * @param fn
 	 * @return
 	 */
-	public abstract String getFieldName(FieldNode fn) ;
+	public abstract String getFieldName(FieldNode fn);
 }

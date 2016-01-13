@@ -1,4 +1,5 @@
 package me.lpk.util;
+
 public class Timer {
 	private long previousTime;
 
@@ -9,8 +10,8 @@ public class Timer {
 	public boolean check(float milliseconds) {
 		return getTime() >= milliseconds;
 	}
-	
-	public long getTime(){
+
+	public long getTime() {
 		return getCurrentTime() - previousTime;
 	}
 

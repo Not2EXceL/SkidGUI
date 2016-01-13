@@ -54,43 +54,39 @@ import org.objectweb.asm.tree.TryCatchBlockNode;
  */
 public class TryCatchBlockSorter extends MethodNode {
 
-    public TryCatchBlockSorter(final MethodVisitor mv, final int access,
-            final String name, final String desc, final String signature,
-            final String[] exceptions) {
-        this(Opcodes.ASM5, mv, access, name, desc, signature, exceptions);
-    }
+	public TryCatchBlockSorter(final MethodVisitor mv, final int access, final String name, final String desc, final String signature, final String[] exceptions) {
+		this(Opcodes.ASM5, mv, access, name, desc, signature, exceptions);
+	}
 
-    protected TryCatchBlockSorter(final int api, final MethodVisitor mv,
-            final int access, final String name, final String desc,
-            final String signature, final String[] exceptions) {
-        super(null, api, access, name, desc, signature, exceptions);
-        this.mv = mv;
-    }
+	protected TryCatchBlockSorter(final int api, final MethodVisitor mv, final int access, final String name, final String desc, final String signature, final String[] exceptions) {
+		super(null, api, access, name, desc, signature, exceptions);
+		this.mv = mv;
+	}
 
-    @Override
-    public void visitEnd() {
-        // Compares TryCatchBlockNodes by the length of their "try" block.
-        Comparator<TryCatchBlockNode> comp = new Comparator<TryCatchBlockNode>() {
+	@Override
+	public void visitEnd() {
+		// Compares TryCatchBlockNodes by the length of their "try" block.
+		Comparator<TryCatchBlockNode> comp = new Comparator<TryCatchBlockNode>() {
 
-            public int compare(TryCatchBlockNode t1, TryCatchBlockNode t2) {
-                int len1 = blockLength(t1);
-                int len2 = blockLength(t2);
-                return len1 - len2;
-            }
+			public int compare(TryCatchBlockNode t1, TryCatchBlockNode t2) {
+				int len1 = blockLength(t1);
+				int len2 = blockLength(t2);
+				return len1 - len2;
+			}
 
-            private int blockLength(TryCatchBlockNode block) {
-                int startidx = instructions.indexOf(block.start);
-                int endidx = instructions.indexOf(block.end);
-                return endidx - startidx;
-            }
-        };
-        Collections.sort(tryCatchBlocks, comp);
-        // Updates the 'target' of each try catch block annotation.
-        for (int i = 0; i < tryCatchBlocks.size(); ++i) {
-            tryCatchBlocks.get(i).updateIndex(i);
-        }
-        if (mv != null) {
-            accept(mv);
-        }
-    }
+			private int blockLength(TryCatchBlockNode block) {
+				int startidx = instructions.indexOf(block.start);
+				int endidx = instructions.indexOf(block.end);
+				return endidx - startidx;
+			}
+		};
+		Collections.sort(tryCatchBlocks, comp);
+		// Updates the 'target' of each try catch block annotation.
+		for (int i = 0; i < tryCatchBlocks.size(); ++i) {
+			tryCatchBlocks.get(i).updateIndex(i);
+		}
+		if (mv != null) {
+			accept(mv);
+		}
+	}
 }

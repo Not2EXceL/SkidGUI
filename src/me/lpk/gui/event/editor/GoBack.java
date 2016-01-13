@@ -10,6 +10,7 @@ public class GoBack implements EventHandler<ActionEvent> {
 	public GoBack(MapTab tab) {
 		this.tab = tab;
 	}
+
 	@Override
 	public void handle(ActionEvent event) {
 		this.tab.goBack();

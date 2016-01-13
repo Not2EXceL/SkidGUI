@@ -29,7 +29,7 @@ public class MappingGen {
 	private static Map<String, ClassNode> nodes;
 	private static Map<String, MappedClass> rename;
 	private static File lastUsed;
-	//private static int classIndex, fieldIndex, methodIndex;
+	// private static int classIndex, fieldIndex, methodIndex;
 	private static String mainClass;
 
 	/**
@@ -223,7 +223,7 @@ public class MappingGen {
 
 	/**
 	 * Attempt to find the given method in a parent class, given the inital
-	 * class the method belongs to. 
+	 * class the method belongs to.
 	 * 
 	 * @param classMap
 	 *            Initial class

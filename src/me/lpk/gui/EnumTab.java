@@ -8,7 +8,7 @@ import me.lpk.gui.tabs.ObfuscationTab;
 import me.lpk.gui.tabs.PatchingTab;
 
 public enum EnumTab {
-	TabHome("Home"), TabPatch("Patching"),TabObfuscation("Obfuscation"), TabMapping("Mapping");
+	TabHome("Home"), TabPatch("Patching"), TabObfuscation("Obfuscation"), TabMapping("Mapping");
 
 	private final String name;
 
@@ -28,7 +28,7 @@ public enum EnumTab {
 
 	private BasicTab genScene() {
 		BasicTab bs = null;
-		switch (this){
+		switch (this) {
 		case TabHome:
 			bs = new HomeTab();
 			break;

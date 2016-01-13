@@ -1,11 +1,6 @@
 package me.lpk.asm.stringrep;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-
-import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
@@ -30,7 +25,6 @@ public class SimpleStringTransformer extends MethodTransformer {
 
 	@Override
 	public void transform(MethodNode method) {
-		Iterator<AbstractInsnNode> i = method.instructions.iterator();
 		for (AbstractInsnNode ain : method.instructions.toArray()) {
 			if (ain instanceof MethodInsnNode) {
 				MethodInsnNode min = (MethodInsnNode) ain;
@@ -83,8 +77,6 @@ public class SimpleStringTransformer extends MethodTransformer {
 				} catch (ClassNotFoundException e) {
 					e.printStackTrace();
 				}
-			} else {
-				System.out.println("FAIL: " + desc);
 			}
 		}
 		return null;

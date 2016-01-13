@@ -19,12 +19,7 @@ public class ObfuscationTab extends BasicTab {
 	private ComboBox<String> cmbObfuscation;
 	private TextField txtOutput;
 	private CheckBox chkMetaMain;
-	private static final String 
-			SIMPLE = "Simple", 
-			ABC = "Alphabetical", 
-			RAND_SHORT = "Random-Short", 
-			RAND_LONG = "Random-Long", 
-			UNI1 = "Unicode Witchcraft";
+	private static final String SIMPLE = "Simple", ABC = "Alphabetical", RAND_SHORT = "Random-Short", RAND_LONG = "Random-Long", UNI1 = "Unicode Witchcraft";
 	private Button btnReob, btnEditor;
 
 	@Override
@@ -64,7 +59,7 @@ public class ObfuscationTab extends BasicTab {
 	@Override
 	public void targetLoaded() {
 		btnReob.setDisable(false);
-		//btnEditor.setDisable(false);
+		// btnEditor.setDisable(false);
 	}
 
 	/**

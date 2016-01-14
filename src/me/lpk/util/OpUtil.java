@@ -3,6 +3,10 @@ package me.lpk.util;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.tree.AbstractInsnNode;
+import org.objectweb.asm.tree.IntInsnNode;
+
 public class OpUtil implements org.objectweb.asm.Opcodes {
 	public static HashMap<Integer, String> opcodes = new HashMap<Integer, String>(getCodes());
 
@@ -210,5 +214,30 @@ public class OpUtil implements org.objectweb.asm.Opcodes {
 		map.put(IFNULL, "IFNULL");
 		map.put(IFNONNULL, "IFNONNULL");
 		return map;
+	}
+
+	/**
+	 * Get the integer value of a InsnNode.
+	 * 
+	 * @param ain
+	 * @return
+	 */
+	public static int getIntValue(AbstractInsnNode ain) {
+		int p = ain.getOpcode();
+		if (p == Opcodes.ICONST_0) {
+			return 0;
+		} else if (p == Opcodes.ICONST_1) {
+			return 1;
+		} else if (p == Opcodes.ICONST_2) {
+			return 2;
+		} else if (p == Opcodes.ICONST_3) {
+			return 3;
+		} else if (p == Opcodes.ICONST_4) {
+			return 4;
+		} else if (p == Opcodes.ICONST_5) {
+			return 5;
+		} else {
+			return ((IntInsnNode) ain).operand;
+		}
 	}
 }

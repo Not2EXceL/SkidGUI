@@ -14,6 +14,7 @@ import org.objectweb.asm.tree.LdcInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 
 import me.lpk.asm.MethodTransformer;
+import me.lpk.util.OpUtil;
 
 public class ZKMMethodTransformer extends MethodTransformer {
 	private final Map<Integer, String> strings = new HashMap<Integer, String>();
@@ -64,9 +65,8 @@ public class ZKMMethodTransformer extends MethodTransformer {
 						if (fin.name.equals(zkmArrayName) && fin.desc.equals("[Ljava/lang/String;")) {
 							// If the value has already been decrypted, swap out
 							// the value.
-							String value = strings.get(getIntValue(iin));
+							String value = strings.get(OpUtil.getIntValue(iin));
 							if (value != null && !value.equals("null")) {
-								System.out.println("\t\t\tDecrypt: " + fin.name + " @" + method.name + "-" + getIntValue(iin) + ":" + value);
 								method.instructions.set(fin, new LdcInsnNode(value));
 								method.instructions.remove(iin);
 								method.instructions.remove(ain);
@@ -140,7 +140,7 @@ public class ZKMMethodTransformer extends MethodTransformer {
 					if (lastInsns.size() > 8) {
 						hasModifiers = true;
 						for (int i = 0; i < 5; i++) {
-							int v = getIntValue(lastInsns.get(i * 2));
+							int v = OpUtil.getIntValue(lastInsns.get(i * 2));
 							modifiers.put(i, v);
 						}
 						possibleMatch = false;
@@ -176,6 +176,7 @@ public class ZKMMethodTransformer extends MethodTransformer {
 	 *            Obfuscated string
 	 * @return Deobfuscated string
 	 */
+	
 	private String decrypt(String input) {
 		String decrypted = "";
 		int i = 0;
@@ -187,28 +188,5 @@ public class ZKMMethodTransformer extends MethodTransformer {
 		return decrypted;
 	}
 
-	/**
-	 * Get the integer value of a InsnNode.
-	 * 
-	 * @param ain
-	 * @return
-	 */
-	private int getIntValue(AbstractInsnNode ain) {
-		int p = ain.getOpcode();
-		if (p == Opcodes.ICONST_0) {
-			return 0;
-		} else if (p == Opcodes.ICONST_1) {
-			return 1;
-		} else if (p == Opcodes.ICONST_2) {
-			return 2;
-		} else if (p == Opcodes.ICONST_3) {
-			return 3;
-		} else if (p == Opcodes.ICONST_4) {
-			return 4;
-		} else if (p == Opcodes.ICONST_5) {
-			return 5;
-		} else {
-			return ((IntInsnNode) ain).operand;
-		}
-	}
+	
 }

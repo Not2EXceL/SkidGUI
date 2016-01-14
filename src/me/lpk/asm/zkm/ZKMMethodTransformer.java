@@ -9,7 +9,6 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldInsnNode;
-import org.objectweb.asm.tree.IntInsnNode;
 import org.objectweb.asm.tree.LdcInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 
@@ -74,7 +73,12 @@ public class ZKMMethodTransformer extends MethodTransformer {
 						}
 					}
 			} else if (!multiZKM) {
-
+				if (ain.getOpcode() == Opcodes.GETSTATIC) {
+					FieldInsnNode fin = (FieldInsnNode) ain;
+					if (fin.name == zkmArrayName && fin.desc.equals("Ljava/lang/String;")) {
+						method.instructions.set(fin, new LdcInsnNode(strings.get(0)));
+					}
+				}
 			}
 		}
 	}
@@ -87,19 +91,27 @@ public class ZKMMethodTransformer extends MethodTransformer {
 	private void extractStatic(MethodNode method) {
 		for (AbstractInsnNode ain : method.instructions.toArray()) {
 			// Setup common to ZKM array and single string
-			if (ain.getOpcode() == Opcodes.PUTSTATIC && ain.getNext().getOpcode() == Opcodes.GOTO) {
+			if (ain.getOpcode() == Opcodes.PUTSTATIC) {
 				// Getting the field name for other methods to reference.
 				if (ain instanceof FieldInsnNode) {
 					FieldInsnNode fin = (FieldInsnNode) ain;
+
 					// If the previous opcode is array storing, it is a multiZKM
 					// string setup.
-					// Otherwise it's storing a single string.
-					if (ain.getPrevious().getOpcode() == Opcodes.AASTORE) {
+					if (ain.getPrevious().getOpcode() == Opcodes.AASTORE && ain.getNext().getOpcode() == Opcodes.GOTO) {
 						zkmArrayName = fin.name;
 						multiZKM = true;
-					} else if (ain.getPrevious().getOpcode() == Opcodes.GOTO) {
-						zkmArrayName = fin.name;
-						multiZKM = false;
+					} else {
+						// Ok so it's not a multi. Let's see if the value setter
+						// is in between two GOTO's.
+						int prev = ain.getPrevious().getOpcode();
+						if (prev == Opcodes.F_NEW) {
+							prev = ain.getPrevious().getPrevious().getOpcode();
+						}
+						if (prev == Opcodes.GOTO && ain.getNext().getOpcode() == Opcodes.GOTO) {
+							zkmArrayName = fin.name;
+							multiZKM = false;
+						}
 					}
 
 				}
@@ -176,7 +188,7 @@ public class ZKMMethodTransformer extends MethodTransformer {
 	 *            Obfuscated string
 	 * @return Deobfuscated string
 	 */
-	
+
 	private String decrypt(String input) {
 		String decrypted = "";
 		int i = 0;
@@ -188,5 +200,4 @@ public class ZKMMethodTransformer extends MethodTransformer {
 		return decrypted;
 	}
 
-	
 }

@@ -73,8 +73,12 @@ public class ZKMMethodTransformer extends MethodTransformer {
 						}
 					}
 			} else if (!multiZKM) {
+				// If it's a single string in a static field, check for
+				// GetStatic
 				if (ain.getOpcode() == Opcodes.GETSTATIC) {
 					FieldInsnNode fin = (FieldInsnNode) ain;
+					// Does the name match? Is the field desc a string? We got a
+					// match!
 					if (fin.name == zkmArrayName && fin.desc.equals("Ljava/lang/String;")) {
 						method.instructions.set(fin, new LdcInsnNode(strings.get(0)));
 					}

@@ -41,7 +41,6 @@ public class Obfuscate implements EventHandler<ActionEvent> {
 				ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
 				ClassVisitor remapper = new RemappingClassAdapter(cw, mapper);
 				cn.accept(remapper);
-				// out.put(cn.name, cw.toByteArray());
 				out.put(renamed.get(cn.name).getRenamed(), cw.toByteArray());
 				//
 				String percentStr = "" + ((workIndex + 0.000000001f) / (renamed.size() - 0.00001f)) * 100;

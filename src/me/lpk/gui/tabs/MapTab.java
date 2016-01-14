@@ -27,11 +27,11 @@ import me.lpk.mapping.MappingGen;
 import me.lpk.mapping.modes.ModeNone;
 import me.lpk.mapping.objects.MappedClass;
 import me.lpk.util.JarUtil;
-import me.lpk.util.TCompar;
+import me.lpk.util.AlphabeticalComparator;
 
 public class MapTab extends BasicTab {
-	private final Map<String, ClassNode> nodes = new TreeMap<String, ClassNode>(new TCompar());
-	private final Map<String, MappedClass> remap = new TreeMap<String, MappedClass>(new TCompar());
+	private final Map<String, ClassNode> nodes = new TreeMap<String, ClassNode>(new AlphabeticalComparator());
+	private final Map<String, MappedClass> remap = new TreeMap<String, MappedClass>(new AlphabeticalComparator());
 	private Button btnSaveJar, btnSaveMap, btnLoadMap;
 	private TreeView<String> tree;
 	private NodeEditor nodeEditor;

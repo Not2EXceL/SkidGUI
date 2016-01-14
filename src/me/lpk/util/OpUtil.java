@@ -3,7 +3,7 @@ package me.lpk.util;
 import java.util.HashMap;
 import java.util.Map;
 
-public class OpCodes implements org.objectweb.asm.Opcodes {
+public class OpUtil implements org.objectweb.asm.Opcodes {
 	public static HashMap<Integer, String> opcodes = new HashMap<Integer, String>(getCodes());
 
 	private static Map<? extends Integer, ? extends String> getCodes() {

@@ -6,10 +6,11 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import me.lpk.gui.controls.VerticalBar;
 import me.lpk.gui.event.patch.PatchJCrypt;
+import me.lpk.gui.event.patch.PatchZKM;
 import me.lpk.gui.tabs.ExternalTab;
 
 public class StageObfuPatcher extends ExternalTab {
-	private Button btnDumpJ;
+	private Button btnDumpJ, btnPatchZKM;
 
 	@Override
 	public void show() {
@@ -23,9 +24,11 @@ public class StageObfuPatcher extends ExternalTab {
 	@Override
 	protected VerticalBar<Button> createButtonList() {
 		btnDumpJ = new Button("Patch JCrypt");
+		btnPatchZKM = new Button("Patch ZKM");
 		btnDumpJ.setOnAction(new PatchJCrypt());
+		btnPatchZKM.setOnAction(new PatchZKM());
 		//
-		return new VerticalBar<Button>(1, btnDumpJ);
+		return new VerticalBar<Button>(1, btnDumpJ,btnPatchZKM);
 	}
 
 	@Override

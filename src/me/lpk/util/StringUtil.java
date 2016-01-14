@@ -2,6 +2,8 @@ package me.lpk.util;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import me.lpk.mapping.objects.MappedClass;
 import me.lpk.mapping.objects.MappedField;
@@ -129,4 +131,39 @@ public class StringUtil {
 		return description;
 	}
 
+	/**
+	 * Checks if a given string is a link
+	 * 
+	 * @param s
+	 * @return
+	 */
+	public static boolean isLink(String s) {
+		String regex = "(?:[0-9]{1,3}\\.){3}[0-9]{1,3}";
+		Pattern p = Pattern.compile(regex);
+		Matcher m = p.matcher(s);
+		String ss = s.replace(".", "");
+		if (m.find() && isNumeric(ss) && (s.length() - ss.length() > 2)) {
+			return true;
+		}
+		String[] lookFor = new String[] { "http://", "https://", "www.", ".", "ftp:", ".net", ".com", ".org", ".php", ".tk", "www", ".io", ".xyz", ".cf", "upload" };
+		int i = 0;
+		for (String lf : lookFor) {
+			if (s.toLowerCase().contains(lf.toLowerCase())) {
+				i++;
+			}
+		}
+		if (i > 2) {
+			return true;
+		}
+		return false;
+	}
+
+	public static boolean isNumeric(String s) {
+		try {
+			Integer.parseInt(s);
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
+	}
 }

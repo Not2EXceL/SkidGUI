@@ -1,4 +1,4 @@
-package me.lpk.asm.stringrep;
+package me.lpk.asm.zkm;
 
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
@@ -8,12 +8,12 @@ import org.objectweb.asm.tree.MethodNode;
 import me.lpk.asm.MethodTransformer;
 import me.lpk.util.OpUtil;
 
-public class SimpleStringClassVisitor extends ClassVisitor {
+public class ZKMClassVisitor extends ClassVisitor {
 	private final MethodTransformer trans;
 
-	public SimpleStringClassVisitor(ClassVisitor cv, ClassNode node, String obClass, String obMethod) {
+	public ZKMClassVisitor(ClassVisitor cv, ClassNode node) {
 		super(OpUtil.ASM5, cv);
-		trans = new SimpleStringTransformer(node, obClass, obMethod);
+		trans = new ZKMMethodTransformer(node);
 	}
 
 	public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {

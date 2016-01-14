@@ -41,7 +41,7 @@ public class PatchSimpleStrings implements EventHandler<ActionEvent> {
 				System.out.println("	" + workIndex + "/" + nodes.size() + " [" + percentStr + "%]");
 				workIndex++;
 			}
-			JarUtil.saveAsJar(out, jar.getName().replace(".jar", "") + "_Re.jar", false);
+			JarUtil.saveAsJar(out, jar.getName().replace(".jar", "") + "_Re_Strings.jar", false);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

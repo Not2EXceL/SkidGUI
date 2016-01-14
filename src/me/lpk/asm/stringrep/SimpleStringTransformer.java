@@ -18,7 +18,6 @@ public class SimpleStringTransformer extends MethodTransformer {
 
 	public SimpleStringTransformer(ClassNode node, String obClass, String obMethod) {
 		super(node);
-
 		this.obClass = obClass;
 		this.obMethod = obMethod;
 	}
@@ -30,7 +29,6 @@ public class SimpleStringTransformer extends MethodTransformer {
 				MethodInsnNode min = (MethodInsnNode) ain;
 				Class<?> param = getParam(min.desc);
 				if (min.getOpcode() == Opcodes.INVOKESTATIC && min.owner.contains(obClass) && min.name.equals(obMethod) && min.desc.endsWith(STRING_OUT) && param != null) {
-					System.out.println("\t\t" + min.owner + "." + min.name + " - " + min.desc);
 					int opcode = min.getPrevious().getOpcode();
 					if (opcode == Opcodes.LDC) {
 						LdcInsnNode ldc = (LdcInsnNode) min.getPrevious();
@@ -43,7 +41,7 @@ public class SimpleStringTransformer extends MethodTransformer {
 							method.instructions.remove(min);
 							method.instructions.set(in, new LdcInsnNode(getValue(min.owner, min.name, param, inVal)));
 						}
-					} else if (opcode == Opcodes.SIPUSH) {
+					} else if (opcode == Opcodes.SIPUSH || opcode == Opcodes.BIPUSH) {
 						IntInsnNode iin = (IntInsnNode) min.getPrevious();
 						method.instructions.remove(min);
 						method.instructions.set(iin, new LdcInsnNode(getValue(min.owner, min.name, param, iin.operand)));

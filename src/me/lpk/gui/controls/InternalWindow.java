@@ -8,15 +8,9 @@ import javafx.scene.layout.Region;
  * @author <a href="http://stackoverflow.com/users/1996639/zella">Zella</a>
  */
 public class InternalWindow extends Region {
-	public final int index;
 	// current state
 	private boolean RESIZE_BOTTOM;
 	private boolean RESIZE_RIGHT;
-
-	public InternalWindow(int index) {
-		this.index = index;
-
-	}
 
 	public void setRoot(Node node) {
 		getChildren().add(node);

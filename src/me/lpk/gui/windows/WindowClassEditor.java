@@ -3,7 +3,6 @@ package me.lpk.gui.windows;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.swing.JOptionPane;
 
 import org.objectweb.asm.tree.ClassNode;
@@ -14,27 +13,29 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Control;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import me.lpk.gui.Main;
 import me.lpk.gui.controls.HorizontalBar;
 import me.lpk.gui.controls.InternalWindow;
 import me.lpk.gui.controls.VerticalBar;
 import me.lpk.gui.event.editor.ChooseClass;
-import me.lpk.gui.event.patch.PatchSimpleStrings;
+import me.lpk.gui.event.editor.EditClass;
 import me.lpk.gui.tabs.ExternalTab;
+import me.lpk.mapping.MappingGen;
+import me.lpk.mapping.modes.ModeNone;
+import me.lpk.mapping.objects.MappedClass;
 import me.lpk.util.JarUtil;
 
 public class WindowClassEditor extends ExternalTab {
+	private Map<String, MappedClass> remap = new HashMap<String, MappedClass>();
 	private Map<String, InternalWindow> windows = new HashMap<String, InternalWindow>();
 	private Map<String, ClassNode> nodes;
 	private Pane containerThatHoldsWindows;
 	private Button btnChoose;
-	private int windex;
 
 	@Override
 	public void show() {
@@ -49,6 +50,7 @@ public class WindowClassEditor extends ExternalTab {
 		stage.show();
 		try {
 			nodes = JarUtil.loadClasses(Main.getTargetJar());
+			remap = MappingGen.getRename(new ModeNone(), nodes);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -63,6 +65,10 @@ public class WindowClassEditor extends ExternalTab {
 			return;
 		}
 		TextField titleText = new TextField(node.name);
+		//TODO: Set up so that the title and other things can be edited
+		titleText.setEditable(false);
+		titleText.setOnKeyPressed(new EditClass(this, titleText, node.name));
+		// titleText.();
 		Button btnClose = new Button("X");
 		btnClose.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -70,7 +76,7 @@ public class WindowClassEditor extends ExternalTab {
 				try {
 					InternalWindow win = windows.get(node.name);
 					if (win != null) {
-						containerThatHoldsWindows.getChildren().remove(win.index);
+						containerThatHoldsWindows.getChildren().remove(win);
 						windows.remove(node.name);
 					} else {
 						System.err.println(node.name + " COULD NOT BE FOUND");
@@ -105,18 +111,22 @@ public class WindowClassEditor extends ExternalTab {
 		}
 		windowPane.setTop(title);
 		windowPane.setCenter(getBody(node));
-		InternalWindow interalWindow = new InternalWindow(windex++);
+		InternalWindow interalWindow = new InternalWindow();
 		interalWindow.setRoot(windowPane);
 		interalWindow.makeDragable(title);
 		interalWindow.makeDragable(titleText);
 		interalWindow.makeResizable(20);
 		interalWindow.makeFocusable();
+		interalWindow.setMinWidth(title.getWidth());
 		windows.put(node.name, interalWindow);
 		containerThatHoldsWindows.getChildren().add(interalWindow);
 	}
 
 	private Node getBody(ClassNode node) {
 		BorderPane bp = new BorderPane();
+		VBox vbox = new VBox(node.methods.size() + node.fields.size());
+
+		bp.setCenter(vbox);
 		bp.setMinSize(200, 100);
 		return bp;
 	}
@@ -138,5 +148,23 @@ public class WindowClassEditor extends ExternalTab {
 
 	@Override
 	public void targetLoaded() {
+	}
+
+	public Map<String, MappedClass> getRemaped() {
+		return remap;
+	}
+
+	/**
+	 * TODO: Update all references in open/future windows
+	 * 
+	 * @param initVal
+	 * @param newValue
+	 */
+	public void updateClassName(String initVal, String newValue) {
+		System.out.println(initVal + ":" + newValue);
+		MappedClass mc = remap.get(initVal);
+		if (mc != null) {
+			mc.setRenamed(newValue);
+		}
 	}
 }

@@ -18,7 +18,7 @@ import me.lpk.util.OpUtil;
 public class ZKMMethodTransformer extends MethodTransformer {
 	private final Map<Integer, String> strings = new HashMap<Integer, String>();
 	private final Map<Integer, Integer> modifiers = new HashMap<Integer, Integer>();
-	private String zkmArrayName;
+	private String zkmFieldName;
 	private boolean multiZKM = false;
 
 	public ZKMMethodTransformer(ClassNode node) {
@@ -61,7 +61,7 @@ public class ZKMMethodTransformer extends MethodTransformer {
 						FieldInsnNode fin = (FieldInsnNode) ain.getPrevious().getPrevious();
 						// If the field name matches and the desc is a string
 						// array...
-						if (fin.name.equals(zkmArrayName) && fin.desc.equals("[Ljava/lang/String;")) {
+						if (fin.name.equals(zkmFieldName) && fin.desc.equals("[Ljava/lang/String;")) {
 							// If the value has already been decrypted, swap out
 							// the value.
 							String value = strings.get(OpUtil.getIntValue(iin));
@@ -79,7 +79,7 @@ public class ZKMMethodTransformer extends MethodTransformer {
 					FieldInsnNode fin = (FieldInsnNode) ain;
 					// Does the name match? Is the field desc a string? We got a
 					// match!
-					if (fin.name == zkmArrayName && fin.desc.equals("Ljava/lang/String;")) {
+					if (fin.name == zkmFieldName && fin.desc.equals("Ljava/lang/String;")) {
 						method.instructions.set(fin, new LdcInsnNode(strings.get(0)));
 					}
 				}
@@ -103,7 +103,7 @@ public class ZKMMethodTransformer extends MethodTransformer {
 					// If the previous opcode is array storing, it is a multiZKM
 					// string setup.
 					if (ain.getPrevious().getOpcode() == Opcodes.AASTORE && ain.getNext().getOpcode() == Opcodes.GOTO) {
-						zkmArrayName = fin.name;
+						zkmFieldName = fin.name;
 						multiZKM = true;
 					} else {
 						// Ok so it's not a multi. Let's see if the value setter
@@ -113,7 +113,8 @@ public class ZKMMethodTransformer extends MethodTransformer {
 							prev = ain.getPrevious().getPrevious().getOpcode();
 						}
 						if (prev == Opcodes.GOTO && ain.getNext().getOpcode() == Opcodes.GOTO) {
-							zkmArrayName = fin.name;
+							//This may very well be our zkm field.
+							zkmFieldName = fin.name;
 							multiZKM = false;
 						}
 					}
@@ -124,21 +125,16 @@ public class ZKMMethodTransformer extends MethodTransformer {
 		// The rest of this method was written by Quux(qMatt) in Kotlin. I just
 		// converted it myself to normal Java.
 		List<AbstractInsnNode> lastInsns = new ArrayList<AbstractInsnNode>();
-		boolean possibleMatch = false, hasModifiers = false, skip = false;
+		boolean possibleMatch = false;
 		int ind = 0;
 		// Iterate through the method instructions.
-
 		for (AbstractInsnNode ain : method.instructions.toArray()) {
-			// Grab all LDC's that are not the first (The first is the 'key').
-			// So skip that one.
+			// Grab all LDC's and populate the strings map.
 			if (ain instanceof LdcInsnNode) {
 				Object cst = ((LdcInsnNode) ain).cst;
 				if (cst instanceof String) {
-					if (!skip) {
-						strings.put(ind, (String) cst);
-						ind++;
-					}
-					skip = false;
+					strings.put(ind, (String) cst);
+					ind++;
 				}
 			} else {
 				// Get the modifiers if a match is detected.
@@ -154,7 +150,6 @@ public class ZKMMethodTransformer extends MethodTransformer {
 					}
 					// Match is valid, populate the modifiers.
 					if (lastInsns.size() > 8) {
-						hasModifiers = true;
 						for (int i = 0; i < 5; i++) {
 							int v = OpUtil.getIntValue(lastInsns.get(i * 2));
 							modifiers.put(i, v);

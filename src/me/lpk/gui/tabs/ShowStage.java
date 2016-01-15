@@ -14,5 +14,4 @@ public class ShowStage implements EventHandler<ActionEvent> {
 	public void handle(ActionEvent event) {
 		tab.show();
 	}
-
 }

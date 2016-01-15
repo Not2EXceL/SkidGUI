@@ -4,7 +4,7 @@ import me.lpk.gui.controls.TabContainer;
 import me.lpk.gui.tabs.AnalyzeTab;
 import me.lpk.gui.tabs.BasicTab;
 import me.lpk.gui.tabs.HomeTab;
-import me.lpk.gui.tabs.MapTab;
+import me.lpk.gui.tabs.MappingTab;
 import me.lpk.gui.tabs.ObfuscationTab;
 import me.lpk.gui.tabs.PatchingTab;
 
@@ -43,7 +43,7 @@ public enum EnumTab {
 			bs = new PatchingTab();
 			break;
 		case TabMapping:
-			bs = new MapTab();
+			bs = new MappingTab();
 			break;
 		default:
 			break;

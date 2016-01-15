@@ -1,4 +1,4 @@
-package me.lpk.gui.stages;
+package me.lpk.gui.windows;
 
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -10,7 +10,7 @@ import me.lpk.gui.controls.VerticalBar;
 import me.lpk.gui.event.patch.PatchSimpleStrings;
 import me.lpk.gui.tabs.ExternalTab;
 
-public class StageStringPatch extends ExternalTab {
+public class WindowStringPatch extends ExternalTab {
 	private TextField txtClass, txtMethodName;
 	private Button btnDecrypt;
 
@@ -18,8 +18,12 @@ public class StageStringPatch extends ExternalTab {
 	public void show() {
 		Stage stage = new Stage();
 		stage.setTitle("Simple String Decryption");
-		setup();
-		stage.setScene(new Scene(this, 620, 200));
+		if (getScene() == null) {
+			setup();
+			stage.setScene(new Scene(this, 620, 200));
+		} else {
+			stage.setScene(this.getScene());
+		}
 		stage.show();
 	}
 

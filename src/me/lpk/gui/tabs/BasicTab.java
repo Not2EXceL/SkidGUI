@@ -40,8 +40,4 @@ public abstract class BasicTab extends BorderPane {
 		pane.getItems().clear();
 		pane.getItems().addAll(controlBar, otherControls);
 	}
-
-	protected SplitPane getPane() {
-		return pane;
-	}
 }

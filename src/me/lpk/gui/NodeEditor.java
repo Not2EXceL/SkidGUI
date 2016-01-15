@@ -15,11 +15,11 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import me.lpk.gui.controls.HorizontalBar;
-import me.lpk.gui.event.editor.EditClass;
-import me.lpk.gui.event.editor.EditField;
-import me.lpk.gui.event.editor.EditMethod;
-import me.lpk.gui.event.editor.GoBack;
-import me.lpk.gui.tabs.MapTab;
+import me.lpk.gui.event.editor.old.EditClass;
+import me.lpk.gui.event.editor.old.EditField;
+import me.lpk.gui.event.editor.old.EditMethod;
+import me.lpk.gui.event.editor.old.GoBack;
+import me.lpk.gui.tabs.MappingTab;
 
 /**
  * TODO: Remove entierly.
@@ -31,7 +31,7 @@ public class NodeEditor extends BorderPane {
 	private static final int bigNum = 9999;
 	private final ClassNode node;
 
-	public NodeEditor(MapTab tab, ClassNode node) {
+	public NodeEditor(MappingTab tab, ClassNode node) {
 		TextField txtClassName = new TextField(node.name);
 		this.node = node;
 		//

@@ -9,45 +9,24 @@ import java.util.TreeMap;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import javax.swing.JOptionPane;
-
 import org.objectweb.asm.tree.ClassNode;
 
-import javafx.scene.control.Button;
-import javafx.scene.control.Control;
+import javafx.event.EventHandler;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import me.lpk.gui.Main;
-import me.lpk.gui.NodeEditor;
-import me.lpk.gui.controls.VerticalBar;
-import me.lpk.gui.event.SaveJar;
-import me.lpk.gui.event.gui.TreeClick;
 import me.lpk.mapping.MappingGen;
 import me.lpk.mapping.modes.ModeNone;
 import me.lpk.mapping.objects.MappedClass;
-import me.lpk.util.JarUtil;
 import me.lpk.util.AlphabeticalComparator;
+import me.lpk.util.JarUtil;
 
-public class MapTab extends BasicTab {
-	private final Map<String, ClassNode> nodes = new TreeMap<String, ClassNode>(new AlphabeticalComparator());
-	private final Map<String, MappedClass> remap = new TreeMap<String, MappedClass>(new AlphabeticalComparator());
-	private Button btnSaveJar, btnSaveMap, btnLoadMap;
-	private TreeView<String> tree;
-	private NodeEditor nodeEditor;
-
-	@Override
-	protected VerticalBar<Control> createButtonList() {
-		btnSaveJar = new Button("Save as jar");
-		btnSaveMap = new Button("Save mappings");
-		btnLoadMap = new Button("Load mappings");
-		btnSaveJar.setDisable(true);
-		btnSaveMap.setDisable(true);
-		btnLoadMap.setDisable(true);
-		btnSaveJar.setOnAction(new SaveJar(this));
-		//
-		return new VerticalBar<Control>(1, btnSaveJar, btnSaveMap);
-	}
+public abstract class TreeViewTab extends BasicTab {
+	protected final Map<String, ClassNode> nodes = new TreeMap<String, ClassNode>(new AlphabeticalComparator());
+	protected final Map<String, MappedClass> remap = new TreeMap<String, MappedClass>(new AlphabeticalComparator());
+	protected TreeView<String> tree;
 
 	@Override
 	protected BorderPane createOtherStuff() {
@@ -59,14 +38,13 @@ public class MapTab extends BasicTab {
 		//
 		return create(tree);
 	}
+	
+	public abstract EventHandler<MouseEvent> getClickEvent();
 
 	@Override
 	public void targetLoaded() {
-		btnSaveJar.setDisable(false);
-		btnSaveMap.setDisable(false);
-		btnLoadMap.setDisable(false);
 		tree = new TreeView<String>(createTree(true));
-		tree.setOnMouseClicked(new TreeClick(this));
+		tree.setOnMouseClicked(getClickEvent());
 		otherControls = create(tree);
 		try {
 			nodes.clear();
@@ -201,24 +179,9 @@ public class MapTab extends BasicTab {
 		return remap;
 	}
 
-	public NodeEditor getNodeEditor() {
-		return nodeEditor;
-	}
-
-	public void showNodeEditor(String key) {
-		ClassNode node = nodes.get(key);
-		if (node != null) {
-			nodeEditor = new NodeEditor(this, node);
-			otherControls = nodeEditor;
-			update();
-		} else {
-			JOptionPane.showMessageDialog(null, "The class: " + key + " could not be found.");
-		}
-	}
-
 	public void goBack() {
 		tree = new TreeView<String>(createTree(false));
-		tree.setOnMouseClicked(new TreeClick(this));
+		tree.setOnMouseClicked(getClickEvent());
 		otherControls = create(tree);
 		update();
 	}

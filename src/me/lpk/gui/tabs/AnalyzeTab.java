@@ -4,8 +4,8 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
 import me.lpk.gui.controls.VerticalBar;
 import me.lpk.gui.event.Analyze;
-import me.lpk.gui.stages.StageObfuPatcher;
-import me.lpk.gui.stages.StageStringPatch;
+import me.lpk.gui.windows.WindowObfuPatcher;
+import me.lpk.gui.windows.WindowStringPatch;
 
 public class AnalyzeTab extends BasicTab {
 	private Button btnIP, btnURL, btnBytecode;

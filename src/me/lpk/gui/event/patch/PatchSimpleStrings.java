@@ -11,14 +11,14 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import me.lpk.asm.stringrep.SimpleStringClassVisitor;
 import me.lpk.gui.Main;
-import me.lpk.gui.stages.StageStringPatch;
+import me.lpk.gui.windows.WindowStringPatch;
 import me.lpk.mapping.MappingGen;
 import me.lpk.util.JarUtil;
 
 public class PatchSimpleStrings implements EventHandler<ActionEvent> {
-	private final StageStringPatch tab;
+	private final WindowStringPatch tab;
 
-	public PatchSimpleStrings(StageStringPatch stageStringPatch) {
+	public PatchSimpleStrings(WindowStringPatch stageStringPatch) {
 		this.tab = stageStringPatch;
 	}
 

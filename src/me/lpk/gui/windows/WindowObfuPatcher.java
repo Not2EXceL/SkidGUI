@@ -1,4 +1,4 @@
-package me.lpk.gui.stages;
+package me.lpk.gui.windows;
 
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -9,15 +9,19 @@ import me.lpk.gui.event.patch.PatchJCrypt;
 import me.lpk.gui.event.patch.PatchZKM;
 import me.lpk.gui.tabs.ExternalTab;
 
-public class StageObfuPatcher extends ExternalTab {
+public class WindowObfuPatcher extends ExternalTab {
 	private Button btnDumpJ, btnPatchZKM;
 
 	@Override
 	public void show() {
 		Stage stage = new Stage();
 		stage.setTitle("Obfuscation Patcher");
-		setup();
-		stage.setScene(new Scene(this, 500, 300));
+		if (getScene() == null) {
+			setup();
+			stage.setScene(new Scene(this, 500, 300));
+		} else {
+			stage.setScene(this.getScene());
+		}
 		stage.show();
 	}
 

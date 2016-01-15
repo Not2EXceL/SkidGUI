@@ -1,16 +1,16 @@
-package me.lpk.gui.event.editor;
+package me.lpk.gui.event.editor.old;
 
 import javafx.event.EventHandler;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ListView.EditEvent;
-import me.lpk.gui.tabs.MapTab;
+import me.lpk.gui.tabs.MappingTab;
 import me.lpk.mapping.objects.MappedMethod;
 
 public class EditMethod implements EventHandler<ListView.EditEvent<String>> {
-	private final MapTab tab;
+	private final MappingTab tab;
 	private final ListView<String> methods;
 
-	public EditMethod(MapTab tab, ListView<String> methods) {
+	public EditMethod(MappingTab tab, ListView<String> methods) {
 		this.methods = methods;
 		this.tab = tab;
 	}

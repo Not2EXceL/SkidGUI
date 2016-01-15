@@ -3,23 +3,28 @@ package me.lpk.gui.tabs;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
 import me.lpk.gui.controls.VerticalBar;
-import me.lpk.gui.stages.StageObfuPatcher;
-import me.lpk.gui.stages.StageStringPatch;
+import me.lpk.gui.windows.WindowClassEditor;
+import me.lpk.gui.windows.WindowObfuPatcher;
+import me.lpk.gui.windows.WindowStringPatch;
 
 public class PatchingTab extends BasicTab {
-	private final StageStringPatch stageStrings = new StageStringPatch();
-	private final StageObfuPatcher stageObfusca = new StageObfuPatcher();
-	private Button btnObfuPatch, btnStringPatch;
+	private final WindowStringPatch stageStrings = new WindowStringPatch();
+	private final WindowObfuPatcher stageObfusca = new WindowObfuPatcher();
+	private final WindowClassEditor stageEditor = new WindowClassEditor();
+	private Button btnObfuPatch, btnStringPatch, btnBytecode;
 
 	@Override
 	protected VerticalBar<Button> createButtonList() {
 		btnObfuPatch = new Button("Obfuscator Patcher");
 		btnStringPatch = new Button("StringOb Patcher");
+		btnBytecode = new Button("Edit Bytecode");
 		btnObfuPatch.setDisable(true);
 		btnStringPatch.setDisable(true);
+		btnBytecode.setDisable(true);
 		btnObfuPatch.setOnAction(new ShowStage(stageObfusca));
 		btnStringPatch.setOnAction(new ShowStage(stageStrings));
-		return new VerticalBar<Button>(1, btnObfuPatch, btnStringPatch);
+		btnBytecode.setOnAction(new ShowStage(stageEditor));
+		return new VerticalBar<Button>(1, btnObfuPatch, btnStringPatch, btnBytecode);
 	}
 
 	@Override
@@ -32,5 +37,6 @@ public class PatchingTab extends BasicTab {
 	public void targetLoaded() {
 		btnObfuPatch.setDisable(false);
 		btnStringPatch.setDisable(false);
+		btnBytecode.setDisable(false);
 	}
 }

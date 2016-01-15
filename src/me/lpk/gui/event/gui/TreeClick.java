@@ -3,12 +3,12 @@ package me.lpk.gui.event.gui;
 import javafx.event.EventHandler;
 import javafx.scene.control.TreeItem;
 import javafx.scene.input.MouseEvent;
-import me.lpk.gui.tabs.MapTab;
+import me.lpk.gui.tabs.MappingTab;
 
 public class TreeClick implements EventHandler<MouseEvent> {
-	private final MapTab tab;
+	private final MappingTab tab;
 
-	public TreeClick(MapTab tab) {
+	public TreeClick(MappingTab tab) {
 		this.tab = tab;
 	}
 

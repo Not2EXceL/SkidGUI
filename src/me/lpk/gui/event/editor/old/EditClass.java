@@ -1,15 +1,15 @@
-package me.lpk.gui.event.editor;
+package me.lpk.gui.event.editor.old;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import me.lpk.gui.tabs.MapTab;
+import me.lpk.gui.tabs.MappingTab;
 import me.lpk.mapping.objects.MappedClass;
 
 public class EditClass implements ChangeListener<String> {
-	private final MapTab tab;
+	private final MappingTab tab;
 	private final String initVal;
 
-	public EditClass(MapTab tab, String initVal) {
+	public EditClass(MappingTab tab, String initVal) {
 		this.initVal = initVal;
 		this.tab = tab;
 	}

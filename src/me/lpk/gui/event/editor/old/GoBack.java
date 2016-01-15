@@ -1,13 +1,13 @@
-package me.lpk.gui.event.editor;
+package me.lpk.gui.event.editor.old;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import me.lpk.gui.tabs.MapTab;
+import me.lpk.gui.tabs.MappingTab;
 
 public class GoBack implements EventHandler<ActionEvent> {
-	private final MapTab tab;
+	private final MappingTab tab;
 
-	public GoBack(MapTab tab) {
+	public GoBack(MappingTab tab) {
 		this.tab = tab;
 	}
 

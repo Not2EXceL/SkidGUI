@@ -14,16 +14,16 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import me.lpk.asm.SkidMapper;
 import me.lpk.gui.Main;
-import me.lpk.gui.tabs.MapTab;
+import me.lpk.gui.tabs.MappingTab;
 import me.lpk.mapping.MappingGen;
 import me.lpk.mapping.objects.MappedClass;
 import me.lpk.util.ASMUtil;
 import me.lpk.util.JarUtil;
 
 public class SaveJar implements EventHandler<ActionEvent> {
-	private final MapTab tab;
+	private final MappingTab tab;
 
-	public SaveJar(MapTab tab) {
+	public SaveJar(MappingTab tab) {
 		this.tab = tab;
 	}
 

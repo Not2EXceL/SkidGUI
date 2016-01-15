@@ -35,15 +35,14 @@ public class PatchJCrypt implements EventHandler<ActionEvent> {
 	/**
 	 * TODO: Scrap this entirely. Should be done VIA ASM instruction reading or
 	 * changing
-	 * <ul>
-	 * <li>ASM Reading: Parse the dumping technique via ASM and emulate
-	 * <li>ASM Writing: Modify the jar to dump it instead execute (simple
-	 * replace instructions near the end and add a method)
-	 * </ul>
+	 * 
+	 * ASM Reading: Parse the dumping technique via ASM to get the important key
+	 * values. Keep the parts that can't be done via ASM (System.arrayCoppy,
+	 * copyAndWrite, etc.).
+	 * 
 	 * 
 	 * This was the code from an actual JCrypt stub decompiled and modified to
 	 * dump the jar.
-	 * 
 	 */
 	private void dumpJCrypt() {
 		File file = Main.getTargetJar();
@@ -96,7 +95,7 @@ public class PatchJCrypt implements EventHandler<ActionEvent> {
 				Key sks = new SecretKeySpec(key, "AES");
 				cipher.init(2, sks, new IvParameterSpec(iv));
 				JarInputStream jarIn = new JarInputStream(new CipherInputStream(resource, cipher));
-				JarOutputStream jarOut = new JarOutputStream(new FileOutputStream(new File(String.valueOf(file.getName()) + "-JCrypt.Dump.jar")));
+				JarOutputStream jarOut = new JarOutputStream(new FileOutputStream(new File(String.valueOf(file.getName()) + "_Re_JCry.jar")));
 				copyAndWrite(jarIn, jarOut);
 				jarOut.close();
 			}

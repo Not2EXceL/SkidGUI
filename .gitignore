@@ -21,3 +21,15 @@ Original_lib/commons-io-2.4.jar
 Original_lib/asm-5.0.4.jar
 Original_lib/asm-tree-5.0.4.jar
 *.html
+
+**/.idea/*
+**/target/*
+**/.gradle/*
+**/build/*
+**/out/*
+/test/*
+*.iml
+*.ipr
+*.iws
+*.class
+dependency-reduced-pom.xml

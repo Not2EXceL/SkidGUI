@@ -5,12 +5,11 @@ import javafx.scene.layout.BorderPane;
 import me.lpk.gui.controls.VerticalBar;
 import me.lpk.gui.windows.WindowObfuPatcher;
 import me.lpk.gui.windows.WindowStringPatch;
-import me.lpk.gui.windows.editor.WindowClassEditor;
 
 public class PatchingTab extends BasicTab {
 	private final WindowStringPatch stageStrings = new WindowStringPatch();
 	private final WindowObfuPatcher stageObfusca = new WindowObfuPatcher();
-	private final WindowClassEditor stageEditor = new WindowClassEditor();
+	//private final WindowClassEditor stageEditor = new WindowClassEditor();
 	private Button btnObfuPatch, btnStringPatch, btnBytecode;
 
 	@Override
@@ -23,7 +22,7 @@ public class PatchingTab extends BasicTab {
 		btnBytecode.setDisable(true);
 		btnObfuPatch.setOnAction(new ShowStage(stageObfusca));
 		btnStringPatch.setOnAction(new ShowStage(stageStrings));
-		btnBytecode.setOnAction(new ShowStage(stageEditor));
+		//btnBytecode.setOnAction(new ShowStage(stageEditor));
 		return new VerticalBar<Button>(1, btnObfuPatch, btnStringPatch, btnBytecode);
 	}
 

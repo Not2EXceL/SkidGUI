@@ -3,12 +3,13 @@ package me.lpk.gui.event.gui;
 import javafx.event.EventHandler;
 import javafx.scene.control.TreeItem;
 import javafx.scene.input.MouseEvent;
-import me.lpk.gui.tabs.MappingTab;
+import me.lpk.gui.tabs.TreeViewTab;
+
 
 public class TreeClick implements EventHandler<MouseEvent> {
-	private final MappingTab tab;
+	private final TreeViewTab tab;
 
-	public TreeClick(MappingTab tab) {
+	public TreeClick(TreeViewTab tab) {
 		this.tab = tab;
 	}
 
@@ -26,7 +27,7 @@ public class TreeClick implements EventHandler<MouseEvent> {
 			}
 			String selected = sb.substring(1);
 			if (tab.hasNode(selected)) {
-				tab.showNodeEditor(selected);
+				tab.clickedNode(tab.getNodes().get(selected));
 			}
 		}
 	}

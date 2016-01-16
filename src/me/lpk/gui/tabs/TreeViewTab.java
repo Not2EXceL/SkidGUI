@@ -185,4 +185,6 @@ public abstract class TreeViewTab extends BasicTab {
 		otherControls = create(tree);
 		update();
 	}
+
+	public abstract void clickedNode(ClassNode classNode);
 }

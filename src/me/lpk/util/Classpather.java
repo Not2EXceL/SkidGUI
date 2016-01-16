@@ -3,8 +3,6 @@ package me.lpk.util;
 import java.io.IOException;
 import java.io.File;
 import java.net.URLClassLoader;
-import java.util.HashMap;
-import java.util.Map;
 import java.net.URL;
 import java.lang.reflect.Method;
 

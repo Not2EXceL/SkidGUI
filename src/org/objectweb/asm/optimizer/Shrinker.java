@@ -67,16 +67,15 @@ public class Shrinker {
 		}
 	}
 
-	static void optimize(final File f, final File d, final Remapper remapper) throws IOException {
-		if (f.isDirectory()) {
-			File[] files = f.listFiles();
+	static void optimize(final File input, final File output, final Remapper remapper) throws IOException {
+		if (input.isDirectory()) {
+			File[] files = input.listFiles();
 			for (int i = 0; i < files.length; ++i) {
-				optimize(files[i], d, remapper);
+				optimize(files[i], output, remapper);
 			}
-		} else if (f.getName().endsWith(".class")) {
+		} else if (input.getName().endsWith(".class")) {
 			ConstantPool cp = new ConstantPool();
-			ClassReader cr = new ClassReader(new FileInputStream(f));
-			// auto-boxing removal requires to recompute the maxs
+			ClassReader cr = new ClassReader(new FileInputStream(input));
 			ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
 			ClassConstantsCollector ccc = new ClassConstantsCollector(cw, cp);
 			ClassOptimizer co = new ClassOptimizer(ccc, remapper);
@@ -98,8 +97,8 @@ public class Shrinker {
 				return;
 			}
 			String n = remapper.mapType(cr.getClassName());
-			File g = new File(d, n + ".class");
-			if (!g.exists() || g.lastModified() < f.lastModified()) {
+			File g = new File(output, n + ".class");
+			if (!g.exists() || g.lastModified() < input.lastModified()) {
 				if (!g.getParentFile().exists() && !g.getParentFile().mkdirs()) {
 					throw new IOException("Cannot create directory " + g.getParentFile());
 				}

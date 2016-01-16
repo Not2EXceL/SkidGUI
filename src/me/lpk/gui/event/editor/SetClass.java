@@ -9,17 +9,17 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import me.lpk.gui.controls.VerticalBar;
 import me.lpk.gui.tabs.TreeViewTab;
-import me.lpk.gui.windows.WindowClassEditor;
+import me.lpk.gui.windows.editor.WindowClassEditor;
 
 /**
  * This is really ugly but it doesn't deserve multiple classes.
  */
-public class ChooseClass implements EventHandler<ActionEvent> {
+public class SetClass implements EventHandler<ActionEvent> {
 	private final WindowClassEditor editor;
 	private Stage stge;
 	private StageSelection sel;
 
-	public ChooseClass(WindowClassEditor editor) {
+	public SetClass(WindowClassEditor editor) {
 		this.editor = editor;
 	}
 
@@ -103,7 +103,7 @@ public class ChooseClass implements EventHandler<ActionEvent> {
 		}
 		String selected = sb.substring(1);
 		if (sel.hasNode(selected)) {
-			editor.addWindow(sel.getNodes().get(selected));
+			editor.setClass(sel.getNodes().get(selected));
 			stge.close();
 		}
 	}

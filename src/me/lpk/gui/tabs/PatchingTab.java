@@ -3,9 +3,9 @@ package me.lpk.gui.tabs;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
 import me.lpk.gui.controls.VerticalBar;
-import me.lpk.gui.windows.WindowClassEditor;
 import me.lpk.gui.windows.WindowObfuPatcher;
 import me.lpk.gui.windows.WindowStringPatch;
+import me.lpk.gui.windows.editor.WindowClassEditor;
 
 public class PatchingTab extends BasicTab {
 	private final WindowStringPatch stageStrings = new WindowStringPatch();

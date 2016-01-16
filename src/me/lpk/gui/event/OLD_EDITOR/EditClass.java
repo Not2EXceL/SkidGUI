@@ -1,4 +1,4 @@
-package me.lpk.gui.event.editor.old;
+package me.lpk.gui.event.OLD_EDITOR;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;

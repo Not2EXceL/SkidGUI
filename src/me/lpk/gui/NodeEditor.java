@@ -15,10 +15,10 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import me.lpk.gui.controls.HorizontalBar;
-import me.lpk.gui.event.editor.old.EditClass;
-import me.lpk.gui.event.editor.old.EditField;
-import me.lpk.gui.event.editor.old.EditMethod;
-import me.lpk.gui.event.editor.old.GoBack;
+import me.lpk.gui.event.OLD_EDITOR.EditClass;
+import me.lpk.gui.event.OLD_EDITOR.EditField;
+import me.lpk.gui.event.OLD_EDITOR.EditMethod;
+import me.lpk.gui.event.OLD_EDITOR.GoBack;
 import me.lpk.gui.tabs.MappingTab;
 
 /**

@@ -1,24 +1,22 @@
 package me.lpk.mapping;
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.FieldNode;
-import org.objectweb.asm.tree.MethodNode;
-
 import com.owlike.genson.Genson;
 import com.owlike.genson.GensonBuilder;
-
 import me.lpk.mapping.objects.MappedClass;
 import me.lpk.mapping.objects.MappedField;
 import me.lpk.mapping.objects.MappedMethod;
 import me.lpk.util.ASMUtil;
 import me.lpk.util.AccessHelper;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.FieldNode;
+import org.objectweb.asm.tree.MethodNode;
+
+import java.io.File;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * TODO: Make less of the functionality static. Was fine for testing but it
